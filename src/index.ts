@@ -3,7 +3,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.get('/', (req:Request, res:Response) => {
-    let message = 'Hello Incubator!!!!!';
+    let message = 'Hello Incubator';
     res.send(message)
 })
 
