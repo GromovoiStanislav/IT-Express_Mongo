@@ -14,6 +14,8 @@ interface video {
     publicationDate?: string,
 }
 
+const availableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
+
 
 const videosBD: Array<video> = []
 
@@ -44,8 +46,6 @@ router.delete('/:id', (req: Request, res: Response) => {
 
 router.post('/', (req: Request, res: Response) => {
     const errorsMessages: Array<any> = []
-    let availableResolutions: Array<string> = []
-
 
 
     if (!req.body.title) {
@@ -64,10 +64,18 @@ router.post('/', (req: Request, res: Response) => {
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.length==0) {
+        const resolutions = req.body.availableResolutions
+
+        if (resolutions.length == 0) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
-            availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
+
+            for (let i: number = 0; i < resolutions.length; i++) {
+                if (availableResolutions.indexOf(resolutions[i]) == -1) {
+                    errorsMessages.push({message: 'incorrect value', field: 'availableResolutions'})
+                    break
+                }
+            }
         }
     }
 
@@ -84,7 +92,7 @@ router.post('/', (req: Request, res: Response) => {
             author: req.body.author,
             canBeDownloaded: false,
             minAgeRestriction: null,
-            availableResolutions: availableResolutions,
+            availableResolutions: req.body.availableResolutions,
             createdAt: newDate.toISOString(),
             publicationDate: new Date(newDate.setDate(newDate.getDate() + 1)).toISOString(),
         }
@@ -104,8 +112,6 @@ router.put('/:id', (req: Request, res: Response) => {
     }
 
     const errorsMessages: Array<any> = []
-    let availableResolutions: Array<string> = []
-
 
     if (!req.body.title) {
         errorsMessages.push({message: 'title required', field: 'title'})
@@ -122,31 +128,43 @@ router.put('/:id', (req: Request, res: Response) => {
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.length==0) {
+        const resolutions = req.body.availableResolutions
+
+        if (resolutions.length == 0) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
-            availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
+            for (let i: number = 0; i < resolutions.length; i++) {
+                if (availableResolutions.indexOf(resolutions[i]) == -1) {
+                    errorsMessages.push({message: 'incorrect value', field: 'availableResolutions'})
+                    break
+                }
+            }
         }
     }
+
 
     const newItem: video = {
         title: req.body.title,
         author: req.body.author,
-        availableResolutions: availableResolutions,
+        availableResolutions: req.body.availableResolutions,
     }
 
-    if (req.body.canBeDownloaded ) {
-        if (req.body.canBeDownloaded instanceof Boolean){newItem.canBeDownloaded = req.body.canBeDownloaded}
-        else{ errorsMessages.push({message: 'canBeDownloaded must be boolean', field: 'canBeDownloaded'})}
+    if (req.body.canBeDownloaded) {
+        if ( typeof req.body.canBeDownloaded == 'boolean') {
+            newItem.canBeDownloaded = req.body.canBeDownloaded
+        } else {
+            errorsMessages.push({message: 'canBeDownloaded must be boolean', field: 'canBeDownloaded'})
+        }
     }
 
     if (req.body.publicationDate) {
         newItem.publicationDate = req.body.publicationDate
     }
 
-    if (req.body.minAgeRestriction ) {
-        if (req.body.minAgeRestriction > 0 && req.body.minAgeRestriction < 19)
+    if (req.body.minAgeRestriction) {
+        if (req.body.minAgeRestriction > 0 && req.body.minAgeRestriction < 19) {
             newItem.minAgeRestriction = req.body.minAgeRestriction
+        }else{ errorsMessages.push({message: 'minAgeRestriction must be from 1 to 18', field: 'minAgeRestriction'})}
     }
 
     if (errorsMessages.length) {
