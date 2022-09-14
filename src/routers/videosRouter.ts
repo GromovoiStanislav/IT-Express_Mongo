@@ -64,7 +64,7 @@ router.post('/', (req: Request, res: Response) => {
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.length) {
+        if (req.body.availableResolutions.length==0) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
             availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
@@ -122,7 +122,7 @@ router.put('/:id', (req: Request, res: Response) => {
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.length) {
+        if (req.body.availableResolutions.length==0) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
             availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
