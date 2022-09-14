@@ -133,7 +133,8 @@ router.put('/:id', (req: Request, res: Response) => {
     }
 
     if (req.body.canBeDownloaded ) {
-        newItem.canBeDownloaded = req.body.canBeDownloaded
+        if (req.body.canBeDownloaded instanceof Boolean){newItem.canBeDownloaded = req.body.canBeDownloaded}
+        else{ errorsMessages.push({message: 'canBeDownloaded must be boolean', field: 'canBeDownloaded'})}
     }
 
     if (req.body.publicationDate) {
