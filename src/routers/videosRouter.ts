@@ -57,14 +57,14 @@ router.post('/', (req: Request, res: Response) => {
 
     if (!req.body.author) {
         errorsMessages.push({message: 'author required', field: 'author'})
-    } else if (req.body.author.lenght > 20) {
+    } else if (req.body.author.length > 20) {
         errorsMessages.push({message: 'maxLength: 20', field: 'author'})
     }
 
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.lenght) {
+        if (req.body.availableResolutions.length) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
             availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
@@ -109,20 +109,20 @@ router.put('/:id', (req: Request, res: Response) => {
 
     if (!req.body.title) {
         errorsMessages.push({message: 'title required', field: 'title'})
-    } else if (req.body.title.lenght > 40) {
+    } else if (req.body.title.length > 40) {
         errorsMessages.push({message: 'maxLength: 40', field: 'title'})
     }
 
     if (!req.body.author) {
         errorsMessages.push({message: 'author required', field: 'author'})
-    } else if (req.body.author.lenght > 40) {
+    } else if (req.body.author.length > 40) {
         errorsMessages.push({message: 'maxLength: 20', field: 'author'})
     }
 
 
     if ((req.body.availableResolutions) && (Array.isArray(req.body.availableResolutions))) {
 
-        if (req.body.availableResolutions.lenght) {
+        if (req.body.availableResolutions.length) {
             errorsMessages.push({message: 'At least one resolution should be added', field: 'availableResolutions'})
         } else {
             availableResolutions = req.body.availableResolutions.map((el: any) => el.toString())
