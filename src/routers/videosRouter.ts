@@ -162,7 +162,7 @@ router.put('/:id', (req: Request, res: Response) => {
         if (new Date(req.body.publicationDate) < new Date(prevDate)) {
             errorsMessages.push({message: 'incorrect publicationDate', field: 'publicationDate'})
         } else {
-            newItem.publicationDate = req.body.publicationDate.toISOString()
+            newItem.publicationDate = new Date(req.body.publicationDate).toISOString()
         }
 
     }
