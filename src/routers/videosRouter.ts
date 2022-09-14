@@ -121,7 +121,7 @@ router.put('/:id', (req: Request, res: Response) => {
 
     if (!req.body.author) {
         errorsMessages.push({message: 'author required', field: 'author'})
-    } else if (req.body.author.length > 40) {
+    } else if (req.body.author.length > 20) {
         errorsMessages.push({message: 'maxLength: 20', field: 'author'})
     }
 
@@ -150,7 +150,7 @@ router.put('/:id', (req: Request, res: Response) => {
     }
 
     if (req.body.canBeDownloaded) {
-        if ( typeof req.body.canBeDownloaded == 'boolean') {
+        if (typeof req.body.canBeDownloaded == 'boolean') {
             newItem.canBeDownloaded = req.body.canBeDownloaded
         } else {
             errorsMessages.push({message: 'canBeDownloaded must be boolean', field: 'canBeDownloaded'})
@@ -158,13 +158,21 @@ router.put('/:id', (req: Request, res: Response) => {
     }
 
     if (req.body.publicationDate) {
-        newItem.publicationDate = req.body.publicationDate
+        const prevDate = videosBD[itemId].publicationDate
+        if (new Date(req.body.publicationDate) < new Date(prevDate)) {
+            errorsMessages.push({message: 'incorrect publicationDate', field: 'publicationDate'})
+        } else {
+            newItem.publicationDate = req.body.publicationDate.toISOString()
+        }
+
     }
 
     if (req.body.minAgeRestriction) {
         if (req.body.minAgeRestriction > 0 && req.body.minAgeRestriction < 19) {
             newItem.minAgeRestriction = req.body.minAgeRestriction
-        }else{ errorsMessages.push({message: 'minAgeRestriction must be from 1 to 18', field: 'minAgeRestriction'})}
+        } else {
+            errorsMessages.push({message: 'minAgeRestriction must be from 1 to 18', field: 'minAgeRestriction'})
+        }
     }
 
     if (errorsMessages.length) {
