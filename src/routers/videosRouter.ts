@@ -46,15 +46,18 @@ router.post('/', (req: Request, res: Response) => {
     const errorsMessages: Array<any> = []
     let availableResolutions: Array<string> = []
 
+
+
     if (!req.body.title) {
         errorsMessages.push({message: 'title required', field: 'title'})
-    } else if (req.body.title.lenght > 40) {
+    } else if (req.body.title.length > 40) {
         errorsMessages.push({message: 'maxLength: 40', field: 'title'})
     }
 
+
     if (!req.body.author) {
         errorsMessages.push({message: 'author required', field: 'author'})
-    } else if (req.body.author.lenght > 40) {
+    } else if (req.body.author.lenght > 20) {
         errorsMessages.push({message: 'maxLength: 20', field: 'author'})
     }
 
