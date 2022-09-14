@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json());
 
-app.use('/hometask_01/api/videos',videosRouter)
+app.use('/ht_01/api/videos',videosRouter)
 
 
 app.delete('/ht_01/api/testing/all-data', (req:Request, res:Response) => {
