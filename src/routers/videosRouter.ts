@@ -1,11 +1,10 @@
 import {Router, Request, Response} from 'express'
-import {isArray} from "util";
 
 const router = Router();
 
 
 interface video {
-    id?: int,
+    id?: number,
     title?: string,
     author?: string,
     canBeDownloaded?: boolean,
@@ -23,7 +22,7 @@ router.get('/', (req: Request, res: Response) => {
 })
 
 router.get('/:id', (req: Request, res: Response) => {
-    const item = videosBD.find(v => v.id == id)
+    const item = videosBD.find(v => v.id == +req.params.id)
     if (item) {
         res.send(item)
     } else {
@@ -33,7 +32,7 @@ router.get('/:id', (req: Request, res: Response) => {
 
 
 router.delete('/:id', (req: Request, res: Response) => {
-    const itemId = videosBD.findIndex(v => v.id == id)
+    const itemId = videosBD.findIndex(v => v.id == +req.params.id)
     if (itemId >= 0) {
         videosBD.splice(itemId, 1)
         res.send(204)
@@ -83,9 +82,10 @@ router.post('/', (req: Request, res: Response) => {
             canBeDownloaded: false,
             minAgeRestriction: null,
             availableResolutions: availableResolutions,
-            createdAt: newDate.toString(),
-            publicationDate: newDate.setDate(newDate.getDate() + 1).toString(),
+            createdAt: newDate.toISOString(),
+            publicationDate: new Date(newDate.setDate(newDate.getDate() + 1)).toISOString(),
         }
+        videosBD.push(newItem)
 
         res.status(201).send(newItem)
     }
@@ -94,7 +94,7 @@ router.post('/', (req: Request, res: Response) => {
 
 router.put('/:id', (req: Request, res: Response) => {
 
-    const itemId = videosBD.findIndex(v => v.id == id)
+    const itemId = videosBD.findIndex(v => v.id == +req.params.id)
     if (itemId == -1) {
         res.send(404)
         return
@@ -132,7 +132,7 @@ router.put('/:id', (req: Request, res: Response) => {
         availableResolutions: availableResolutions,
     }
 
-    if (req.body.canBeDownloaded && req.body.canBeDownloaded instanceof Boolean) {
+    if (req.body.canBeDownloaded ) {
         newItem.canBeDownloaded = req.body.canBeDownloaded
     }
 
@@ -140,7 +140,7 @@ router.put('/:id', (req: Request, res: Response) => {
         newItem.publicationDate = req.body.publicationDate
     }
 
-    if (req.body.minAgeRestriction && req.body.minAgeRestriction instanceof Number) {
+    if (req.body.minAgeRestriction ) {
         if (req.body.minAgeRestriction > 0 && req.body.minAgeRestriction < 19)
             newItem.minAgeRestriction = req.body.minAgeRestriction
     }
