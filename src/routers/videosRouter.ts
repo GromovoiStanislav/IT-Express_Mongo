@@ -158,7 +158,7 @@ router.put('/:id', (req: Request, res: Response) => {
     }
 
     if (req.body.publicationDate) {
-        const prevDate = videosBD[itemId].publicationDate
+        const prevDate = ''+videosBD[itemId].publicationDate
         if (new Date(req.body.publicationDate) < new Date(prevDate)) {
             errorsMessages.push({message: 'incorrect publicationDate', field: 'publicationDate'})
         } else {
