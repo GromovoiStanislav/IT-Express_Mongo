@@ -33,22 +33,22 @@ router.delete('/:id', auth, (req: Request, res: Response) => {
 const regex = new RegExp('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$')
 const validator = [
     body('name').notEmpty().trim().isLength({max: 15}),
-    body('youtubeUrl').notEmpty().trim().isLength({max: 100}).matches(regex)
+    body('youtubeUrl').notEmpty().trim().isLength({max: 100}).matches(regex),
 ]
 
 
 router.post('/', auth, validator, inputValidation, (req: Request, res: Response) => {
     const data = {
-        name: req.body.name,
-        youtubeUrl: req.body.youtubeUrl
+        name: req.body.name.trim(),
+        youtubeUrl: req.body.youtubeUrl.trim()
     }
     res.status(201).send(Blogs.createNewBlog(data))
 })
 
 router.put('/:id', auth, validator, inputValidation, (req: Request, res: Response) => {
     const data = {
-        name: req.body.name,
-        youtubeUrl: req.body.youtubeUrl
+        name: req.body.name.trim(),
+        youtubeUrl: req.body.youtubeUrl.trim()
     }
 
     if (Blogs.updateBlog(req.params.id, data)) {

@@ -31,4 +31,21 @@ export const Posts = {
         }
         return false
     },
+
+    createNewPost(data:IPost){
+        const newPost = {...data, id:String(PostsBD.length+1),blogName:"blogName"}
+        PostsBD.push(newPost)
+        return newPost
+    },
+
+    updatePost(id:string,data:IPost){
+        const itemId = PostsBD.findIndex(v => v.id == id)
+        if (itemId == -1) {
+            return false
+        }
+
+        PostsBD[itemId] = {...PostsBD.at(itemId), ...data}
+        return true
+    },
+
 }

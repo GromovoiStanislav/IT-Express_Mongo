@@ -1,4 +1,4 @@
-import express ,{Request, Response} from 'express'
+import express, {NextFunction, Request, Response} from 'express'
 import videosRouter,{clearAllVideos} from './routers/videosRouter'
 import blogsRouter,{clearAllBlogs} from './routers/blogsRouter'
 import postsRouter,{clearAllPosts} from './routers/postsRouter'
@@ -6,6 +6,7 @@ import postsRouter,{clearAllPosts} from './routers/postsRouter'
 
 const app = express()
 const PORT = process.env.PORT || 3000
+
 
 
 app.use(express.json());
@@ -20,6 +21,10 @@ app.delete('/testing/all-data', (req:Request, res:Response) => {
     clearAllBlogs()
     clearAllPosts()
     res.send(204)
+})
+
+app.use((req:Request, res:Response) => {
+    res.send(404)
 })
 
 

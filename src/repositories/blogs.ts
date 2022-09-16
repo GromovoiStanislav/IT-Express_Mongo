@@ -33,16 +33,15 @@ export const Blogs = {
         BlogsBD.push(newBlog)
         return newBlog
     },
+
     updateBlog(id:string,data:IBlog){
         const itemId = BlogsBD.findIndex(v => v.id == id)
         if (itemId == -1) {
             return false
         }
 
-        BlogsBD[itemId] = {...BlogsBD[itemId], ...data}
+        BlogsBD[itemId] = {...BlogsBD.at(itemId), ...data}
         return true
     },
-
-
 
 }
