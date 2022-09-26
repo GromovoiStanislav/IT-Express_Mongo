@@ -46,12 +46,11 @@ const validator = [
     body('title').trim().notEmpty().isLength({max: 30}),
     body('shortDescription').trim().notEmpty().isLength({max: 100}),
     body('content').trim().notEmpty().isLength({max: 1000}),
-]
-const validatorBlogId = [
     body('blogId').notEmpty().custom(isValidBlogId),
 ]
 
-router.post('/', auth, validator, inputValidation,validatorBlogId, (req: Request, res: Response) => {
+
+router.post('/', auth, validator, inputValidation, (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
