@@ -8,12 +8,10 @@ export const inputValidation =
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
 
-            const errorsMessages = errors.array().map(err=>({
+            const errorsMessages = errors.array({onlyFirstError:true}).map(err=>({
                 "message": err.msg,
                 "field": err.param
             }))
-            ///надо свернуть масив
-
 
             res.status(400).json({errorsMessages: errorsMessages});
         } else {

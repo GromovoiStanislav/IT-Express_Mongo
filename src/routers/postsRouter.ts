@@ -43,9 +43,9 @@ const isValidBlogId:CustomValidator = (value)=>{
     return true;
 }
 const validator = [
-    body('title').notEmpty().trim().isLength({max: 30}),
-    body('shortDescription').notEmpty().trim().isLength({max: 100}),
-    body('content').notEmpty().trim().isLength({max: 1000}),
+    body('title').trim().notEmpty().isLength({max: 30}),
+    body('shortDescription').trim().notEmpty().isLength({max: 100}),
+    body('content').trim().notEmpty().isLength({max: 1000}),
 ]
 const validatorBlogId = [
     body('blogId').notEmpty().custom(isValidBlogId),

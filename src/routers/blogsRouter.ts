@@ -32,8 +32,8 @@ router.delete('/:id', auth, (req: Request, res: Response) => {
 
 const regex = new RegExp('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$')
 const validator = [
-    body('name').notEmpty().trim().isLength({max: 15}),
-    body('youtubeUrl').notEmpty().trim().isLength({max: 100}).matches(regex),
+    body('name').trim().notEmpty().isLength({max: 15}),
+    body('youtubeUrl').trim().notEmpty().isLength({max: 100}).matches(regex),
 ]
 
 
