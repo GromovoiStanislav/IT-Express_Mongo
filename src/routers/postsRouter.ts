@@ -1,9 +1,10 @@
 import {Router, Request, Response, NextFunction} from 'express'
 import {Posts} from '../repositories/posts'
+import {Blogs} from '../repositories/blogs'
 import {auth} from "../middlewares/authorization";
-import {body} from 'express-validator';
+import {body, CustomValidator} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
-import {Blogs} from "../repositories/blogs";
+
 
 const router = Router();
 
@@ -35,15 +36,22 @@ router.delete('/:id', auth,(req: Request, res: Response) => {
         res.send(404)
     }
 })
-
+const isValidBlogId:CustomValidator = (value)=>{
+    const currentBlog = Blogs.findByID(value)
+    if (!currentBlog){throw new Error('wrong blogId');
+    }
+    return true;
+}
 const validator = [
     body('title').notEmpty().trim().isLength({max: 30}),
     body('shortDescription').notEmpty().trim().isLength({max: 100}),
     body('content').notEmpty().trim().isLength({max: 1000}),
-    body('blogId').notEmpty(),
+]
+const validatorBlogId = [
+    body('blogId').notEmpty().custom(isValidBlogId),
 ]
 
-router.post('/', auth, validator, inputValidation, (req: Request, res: Response) => {
+router.post('/', auth, validator, inputValidation,validatorBlogId, (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),

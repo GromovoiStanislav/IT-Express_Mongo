@@ -1,3 +1,5 @@
+import {Blogs} from './blogs'
+
 interface IPost {
     id?: string,
     title?: string,
@@ -7,7 +9,7 @@ interface IPost {
     blogName?: string,
 }
 
-const PostsBD: Array<IPost> = []
+ const PostsBD: Array<IPost> = []
 
 
 export const Posts = {
@@ -33,7 +35,9 @@ export const Posts = {
     },
 
     createNewPost(data:IPost){
-        const newPost = {...data, id:String(PostsBD.length+1),blogName:"blogName"}
+        const blog = Blogs.findByID(String(data.blogId))
+        const blogName = blog ? blog.name:""
+        const newPost = {...data, id:String(PostsBD.length+1),blogName}
         PostsBD.push(newPost)
         return newPost
     },
