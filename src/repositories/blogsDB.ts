@@ -14,16 +14,23 @@ const uid = () => String(Date.now());
 
 export const Blogs = {
 
-    async clearAll():Promise<void> {
+    async clearAll(): Promise<void> {
         await BlogsCollection.deleteMany({})
     },
 
     async getAll(): Promise<BlogType[]> {
-        return await BlogsCollection.find({}).toArray()
+        //return await BlogsCollection.find({}, {_id: 0}).toArray()
+
+        const result = await BlogsCollection.find({}).toArray()
+        result.forEach(r=>delete r._id)
+        return result
     },
 
     async findByID(id: string): Promise<BlogType | null> {
-        return await BlogsCollection.findOne({id})
+        const result = await BlogsCollection.findOne({id})
+        delete result._id
+        if (result) return result
+        return null
     },
 
     async deleteByID(id: string): Promise<Boolean> {
