@@ -19,18 +19,11 @@ export const Blogs = {
     },
 
     async getAll(): Promise<BlogType[]> {
-        //return await BlogsCollection.find({}, {_id: 0}).toArray()
-
-        const result = await BlogsCollection.find({}).toArray()
-        result.forEach(r=>delete r._id)
-        return result
+        return await BlogsCollection.find({},  {projection: {_id: 0}}).toArray()
     },
 
     async findByID(id: string): Promise<BlogType | null> {
-        const result = await BlogsCollection.findOne({id})
-        delete result._id
-        if (result) return result
-        return null
+        return await BlogsCollection.findOne({id},{projection: {_id: 0}})
     },
 
     async deleteByID(id: string): Promise<Boolean> {
