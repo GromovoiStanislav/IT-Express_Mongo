@@ -1,25 +1,29 @@
-interface IBlog {
+export type BlogType = {
     id?: string,
     name?: string,
     youtubeUrl?: string,
 }
 
-const BlogsBD: Array<IBlog> = []
+const BlogsBD: Array<BlogType> = []
+
+const uid = () => String(Date.now());
 
 export const Blogs = {
-    getAll() {
+    async getAll(): Promise<BlogType[]> {
         return BlogsBD
     },
 
-    clearAll() {
+    async clearAll(): Promise<void> {
         BlogsBD.length = 0
     },
 
-    findByID(id: string) {
-        return BlogsBD.find(v => v.id == id)
+    async findByID(id: string): Promise<BlogType | null> {
+        const blog = BlogsBD.find(v => v.id == id)
+        if (blog) return blog
+        return null
     },
 
-    deleteByID(id: string) {
+    async deleteByID(id: string): Promise<Boolean> {
         const itemId = BlogsBD.findIndex(v => v.id == id)
         if (itemId >= 0) {
             BlogsBD.splice(itemId, 1)
@@ -28,13 +32,13 @@ export const Blogs = {
         return false
     },
 
-    createNewBlog(data:IBlog){
-        const newBlog = {...data, id:String(BlogsBD.length+1)}
+    async createNewBlog(data: BlogType): Promise<BlogType> {
+        const newBlog = {...data, id: String(BlogsBD.length + 1)}
         BlogsBD.push(newBlog)
         return newBlog
     },
 
-    updateBlog(id:string,data:IBlog){
+    async updateBlog(id: string, data: BlogType): Promise<Boolean> {
         const itemId = BlogsBD.findIndex(v => v.id == id)
         if (itemId == -1) {
             return false

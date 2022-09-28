@@ -1,16 +1,18 @@
 import {Blogs} from './blogs'
 
-interface IPost {
+type PostType = {
     id?: string,
     title?: string,
     shortDescription?: string,
     content?: string,
     blogId?: string,
     blogName?: string,
+    createdAt?: string,
 }
 
- const PostsBD: Array<IPost> = []
+const PostsBD: Array<PostType> = []
 
+const uid = () => String(Date.now());
 
 export const Posts = {
     getAll() {
@@ -34,15 +36,15 @@ export const Posts = {
         return false
     },
 
-    createNewPost(data:IPost){
-        const blog = Blogs.findByID(String(data.blogId))
-        const blogName = blog ? blog.name:""
-        const newPost = {...data, id:String(PostsBD.length+1),blogName}
+    async createNewPost(data: PostType) {
+        const blog = await Blogs.findByID(String(data.blogId))
+        const blogName = blog ? blog.name : ""
+        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName}
         PostsBD.push(newPost)
         return newPost
     },
 
-    updatePost(id:string,data:IPost){
+    updatePost(id:string,data:PostType){
         const itemId = PostsBD.findIndex(v => v.id == id)
         if (itemId == -1) {
             return false

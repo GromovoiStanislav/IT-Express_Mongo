@@ -1,6 +1,7 @@
 import {Router, Request, Response, NextFunction} from 'express'
 import {Posts} from '../repositories/posts'
-import {Blogs} from '../repositories/blogs'
+//import {Blogs} from '../repositories/blogs'
+import {Blogs} from '../repositories/blogsDB'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -20,7 +21,6 @@ router.get('/:id', (req: Request, res: Response) => {
         return
     }
 
-
     const item = Posts.findByID(id)
     if (item) {
         res.send(item)
@@ -36,28 +36,30 @@ router.delete('/:id', auth,(req: Request, res: Response) => {
         res.send(404)
     }
 })
-const isValidBlogId:CustomValidator = (value)=>{
-    const currentBlog = Blogs.findByID(value)
-    if (!currentBlog){throw new Error('wrong blogId');
+const isValidBlogId:CustomValidator = async (value) => {
+    const currentBlog = await Blogs.findByID(value)
+    if (!currentBlog) {
+        throw new Error('wrong blogId');
     }
     return true;
 }
 const validator = [
-    body('title').trim().notEmpty().isLength({max: 30}),
-    body('shortDescription').trim().notEmpty().isLength({max: 100}),
-    body('content').trim().notEmpty().isLength({max: 1000}),
-    body('blogId').notEmpty().custom(isValidBlogId),
+    body('title').trim().notEmpty().isString().isLength({max: 30}),
+    body('shortDescription').trim().isString().notEmpty().isLength({max: 100}),
+    body('content').trim().notEmpty().isString().isLength({max: 1000}),
+    body('blogId').trim().notEmpty().isString().custom(isValidBlogId),
 ]
 
 
-router.post('/', auth, validator, inputValidation, (req: Request, res: Response) => {
+router.post('/', auth, validator, inputValidation, async (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
         content: req.body.content.trim(),
         blogId: req.body.blogId.trim(),
     }
-    res.status(201).send(Posts.createNewPost(data))
+    const result = await Posts.createNewPost(data)
+    res.status(201).send(result)
 })
 
 
@@ -76,8 +78,6 @@ router.put('/:id', auth, validator, inputValidation, (req: Request, res: Respons
     }
 
 })
-
-
 
 
 export const clearAllPosts = () => {
