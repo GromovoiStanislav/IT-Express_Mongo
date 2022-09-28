@@ -24,7 +24,7 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
     res.send(204)
 })
 
-app.use((req:Request, res:Response) => {
+app.use((req:Request, res:Response,next:NextFunction) => {
     res.send(404)
 })
 
