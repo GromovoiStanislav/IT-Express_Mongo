@@ -13,8 +13,6 @@ const BlogsCollection = dbDemo.collection<BlogType>('blogs')
 const uid = () => String(Date.now());
 
 
-
-
 export const Blogs = {
 
     async clearAll(): Promise<void> {
@@ -35,16 +33,14 @@ export const Blogs = {
     },
 
     async createNewBlog(data: BlogType): Promise<BlogType> {
-        const newBlog = {...data, id: uid(), createdAt: new Date().toISOString()}
-        const result = await BlogsCollection.insertOne({...newBlog})
-        return newBlog
+        const result = await BlogsCollection.insertOne(data)
+        return data
     },
 
     async updateBlog(id: string, data: BlogType): Promise<Boolean> {
         const result = await BlogsCollection.updateOne({id}, {$set: {...data}})
         return result.matchedCount === 1
     },
-
 
 }
 

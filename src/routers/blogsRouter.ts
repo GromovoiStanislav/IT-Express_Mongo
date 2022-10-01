@@ -1,6 +1,5 @@
 import {Router, Request, Response} from 'express'
-//import {Blogs} from '../repositories/blogs'
-import {Blogs} from '../repositories/blogsDB'
+import {BlogsService} from '../domains/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -10,12 +9,12 @@ const router = Router();
 
 
 router.get('/', async (req: Request, res: Response) => {
-    const result = await Blogs.getAll()
+    const result = await BlogsService.getAll()
     res.send(result)
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
-    const item = await Blogs.findByID(req.params.id)
+    const item = await BlogsService.findByID(req.params.id)
     if (item) {
         res.send(item)
     } else {
@@ -24,7 +23,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 })
 
 router.delete('/:id', auth, async (req: Request, res: Response) => {
-    const result = await Blogs.deleteByID(req.params.id)
+    const result = await BlogsService.deleteByID(req.params.id)
     if (result) {
         res.send(204)
     } else {
@@ -47,7 +46,7 @@ router.post('/', auth, validator, inputValidation, async (req: Request, res: Res
         name: req.body.name.trim(),
         youtubeUrl: req.body.youtubeUrl.trim()
     }
-    const result = await Blogs.createNewBlog(data)
+    const result = await BlogsService.createNewBlog(data)
     res.status(201).send(result)
 })
 
@@ -57,7 +56,7 @@ router.put('/:id', auth, validator, inputValidation, async(req: Request, res: Re
         youtubeUrl: req.body.youtubeUrl.trim()
     }
 
-    const result = await Blogs.updateBlog(req.params.id, data)
+    const result = await BlogsService.updateBlog(req.params.id, data)
     if (result) {
         res.send(204)
     } else {
@@ -68,7 +67,7 @@ router.put('/:id', auth, validator, inputValidation, async(req: Request, res: Re
 
 
 export const clearAllBlogs = async () => {
-    await Blogs.clearAll()
+    await BlogsService.clearAll()
 }
 
 export default router
