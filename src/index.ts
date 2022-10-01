@@ -21,15 +21,15 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
     await clearAllVideos()
     await clearAllBlogs()
     await clearAllPosts()
-    res.send(204)
+    res.sendStatus(204)
 })
 
 app.use((req:Request, res:Response,next:NextFunction) => {
-    res.send(404)
+    res.sendStatus(404)
 })
 
 app.use((err:any,req:Request, res:Response,next:NextFunction) => {
-    res.send(500)
+    res.sendStatus(500)
 })
 
 

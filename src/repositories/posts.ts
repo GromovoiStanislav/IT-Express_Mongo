@@ -1,6 +1,6 @@
-import {Blogs} from './blogs'
+import {Blogs} from './blogsDB'
 
-type PostType = {
+export type PostType = {
     id?: string,
     title?: string,
     shortDescription?: string,
@@ -50,7 +50,7 @@ export const Posts = {
             return false
         }
 
-        PostsBD[itemId] = {...PostsBD.at(itemId), ...data}
+        PostsBD[itemId] = {...PostsBD[itemId], ...data}
         return true
     },
 

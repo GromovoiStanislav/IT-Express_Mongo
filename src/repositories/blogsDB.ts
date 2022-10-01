@@ -9,9 +9,6 @@ export type BlogType = {
 
 const BlogsCollection = dbDemo.collection<BlogType>('blogs')
 
-//const uid= ()=>Math.random().toString(36).substring(2)
-const uid = () => String(Date.now());
-
 
 export const Blogs = {
 

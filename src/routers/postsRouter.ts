@@ -1,7 +1,6 @@
 import {Router, Request, Response, NextFunction} from 'express'
-import {Posts} from '../repositories/posts'
-//import {Blogs} from '../repositories/blogs'
-import {Blogs} from '../repositories/blogsDB'
+import {PostsService} from '../domain/posts-services'
+import {BlogsService} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -10,34 +9,29 @@ import {inputValidation} from '../middlewares/input-validation'
 const router = Router();
 
 
-router.get('/', (req: Request, res: Response) => {
-    res.send(Posts.getAll())
+router.get('/', async (req: Request, res: Response) => {
+    const result = await PostsService.getAll()
+    res.send(result)
 })
 
-router.get('/:id', (req: Request, res: Response) => {
-    const id = req.params.id
-    if (!id) {
-        res.send(400)
-        return
-    }
-
-    const item = Posts.findByID(id)
+router.get('/:id', async (req: Request, res: Response) => {
+    const item = await PostsService.findByID(req.params.id)
     if (item) {
         res.send(item)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 })
 
-router.delete('/:id', auth,(req: Request, res: Response) => {
-    if (Posts.deleteByID(req.params.id)) {
-        res.send(204)
+router.delete('/:id', auth, async (req: Request, res: Response) => {
+    if (await PostsService.deleteByID(req.params.id)) {
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 })
-const isValidBlogId:CustomValidator = async (value) => {
-    const currentBlog = await Blogs.findByID(value)
+const isValidBlogId: CustomValidator = async (value) => {
+    const currentBlog = await BlogsService.findByID(value)
     if (!currentBlog) {
         throw new Error('wrong blogId');
     }
@@ -58,12 +52,12 @@ router.post('/', auth, validator, inputValidation, async (req: Request, res: Res
         content: req.body.content.trim(),
         blogId: req.body.blogId.trim(),
     }
-    const result = await Posts.createNewPost(data)
+    const result = await PostsService.createNewPost(data)
     res.status(201).send(result)
 })
 
 
-router.put('/:id', auth, validator, inputValidation, (req: Request, res: Response) => {
+router.put('/:id', auth, validator, inputValidation, async (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
@@ -71,17 +65,17 @@ router.put('/:id', auth, validator, inputValidation, (req: Request, res: Respons
         blogId: req.body.blogId.trim(),
     }
 
-    if (Posts.updatePost(req.params.id, data)) {
-        res.send(204)
+    if (await PostsService.updatePost(req.params.id, data)) {
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })
 
 
-export const clearAllPosts = () => {
-    Posts.clearAll()
+export const clearAllPosts = async () => {
+    await PostsService.clearAll()
 }
 
 export default router

@@ -18,16 +18,16 @@ router.get('/:id', async (req: Request, res: Response) => {
     if (item) {
         res.send(item)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 })
 
 router.delete('/:id', auth, async (req: Request, res: Response) => {
     const result = await BlogsService.deleteByID(req.params.id)
     if (result) {
-        res.send(204)
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 })
 
@@ -58,9 +58,9 @@ router.put('/:id', auth, validator, inputValidation, async(req: Request, res: Re
 
     const result = await BlogsService.updateBlog(req.params.id, data)
     if (result) {
-        res.send(204)
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })
