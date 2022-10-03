@@ -32,6 +32,7 @@ export const Blogs = {
 
         const items = await BlogsCollection
             .find(filter,  {projection: {_id: 0}})
+            .limit(pageSize).skip((pageNumber-1)*pageSize)
             .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
             .toArray()
 
