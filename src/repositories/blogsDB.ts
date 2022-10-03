@@ -7,6 +7,15 @@ export type BlogType = {
     createdAt?: string,
 }
 
+export type BlogViewType = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: BlogType[]
+}
+
+
 const BlogsCollection = dbDemo.collection<BlogType>('blogs')
 
 
@@ -16,8 +25,24 @@ export const Blogs = {
         await BlogsCollection.deleteMany({})
     },
 
-    async getAll(): Promise<BlogType[]> {
-        return await BlogsCollection.find({},  {projection: {_id: 0}}).toArray()
+    async getAll(searchNameTerm:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<BlogViewType> {
+
+        const filter:any = {}
+        if(searchNameTerm){filter.name = {$regex:searchNameTerm}}
+
+        const items = await BlogsCollection
+            .find(filter,  {projection: {_id: 0}})
+            .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
+            .toArray()
+
+        const totalCount = await BlogsCollection.countDocuments(filter)
+
+        // @ts-ignore
+        const pagesCount = Math.ceil(totalCount/pageSize)
+        const page=pageNumber
+
+        // @ts-ignore
+        return {pagesCount,page,pageSize,totalCount,items}
     },
 
     async findByID(id: string): Promise<BlogType | null> {
