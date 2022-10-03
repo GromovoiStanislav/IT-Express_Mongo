@@ -28,7 +28,11 @@ export const PostsService = {
         return await Posts.findByID(id)
     },
 
-    async findByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
+    async findByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType | null> {
+        const blog = await Blogs.findByID(blogId)
+        if (!blog) {
+            return null
+        }
 
         let _pageNumber = parseInt(pageNumber) || 1
         let _pageSize = parseInt(pageSize) || 10
@@ -62,14 +66,14 @@ export const PostsService = {
 
     createNewByBlogID: async function (data: PostType): Promise<PostType | null> {
         const blog = await Blogs.findByID(String(data.blogId))
-        if (blog) {
-            const blogName = blog ? blog.name : ""
-            const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName} // blog.name
-            const result = await Posts.createNewPost({...newPost})
-            return newPost
-        } else {
+        if (!blog) {
             return null
         }
+
+        const blogName = blog ? blog.name : ""
+        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName} // blog.name
+        const result = await Posts.createNewPost({...newPost})
+        return newPost
 
     },
 

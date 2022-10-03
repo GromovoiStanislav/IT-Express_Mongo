@@ -29,6 +29,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
+//////////////////// START
 router.get('/:blogId/posts', async (req: Request, res: Response) => {
     const pageNumber = req.query.pageNumber?.toString() || ''
     const pageSize = req.query.pageSize?.toString() || ''
@@ -43,7 +44,6 @@ router.get('/:blogId/posts', async (req: Request, res: Response) => {
     }
 })
 
-//////////////////// START
 const postsValidator = [
     body('title').trim().notEmpty().isString().isLength({max: 30}),
     body('shortDescription').trim().isString().notEmpty().isLength({max: 100}),

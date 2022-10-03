@@ -12,13 +12,13 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json());
 
-app.use('/videos',videosRouter)
+//app.use('/videos',videosRouter)
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
 
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
-    await clearAllVideos()
+   //await clearAllVideos()
     await clearAllBlogs()
     await clearAllPosts()
     res.sendStatus(204)
