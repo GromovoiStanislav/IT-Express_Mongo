@@ -13,7 +13,7 @@ router.get('/', async (req: Request, res: Response) => {
     const pageNumber = req.query.pageNumber?.toString() || ''
     const pageSize = req.query.pageSize?.toString() || ''
     const sortBy = req.query.sortBy?.toString() || ''
-    const sortDirection = req.query.desc?.toString() || ''
+    const sortDirection = req.query.sortDirection?.toString() || ''
 
     const result = await PostsService.getAll(pageNumber,pageSize,sortBy,sortDirection)
     res.send(result)
