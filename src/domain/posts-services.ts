@@ -1,4 +1,4 @@
-import {Posts, PostType} from "../repositories/postsDB";
+import {Posts, PostType, PostViewType} from "../repositories/postsDB";
 import {Blogs} from '../repositories/blogsDB'
 
 //const uid= ()=>Math.random().toString(36).substring(2)
@@ -11,8 +11,17 @@ export const PostsService = {
         await Posts.clearAll()
     },
 
-    async getAll(): Promise<PostType[]> {
-        return await Posts.getAll()
+    async getAll(pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType[]> {
+
+        let _pageNumber = parseInt(pageNumber) || 1
+        let _pageSize = parseInt(pageSize) || 10
+        let _sortBy = sortBy || 'createdAt'
+        let _sortDirection = sortDirection || 'desc'
+        if (!['desc', 'asc'].includes(_sortDirection)) {
+            _sortDirection = 'desc'
+        }
+
+        return await Posts.getAll( _pageNumber, _pageSize, _sortBy, _sortDirection)
     },
 
     async findByID(id: string): Promise<PostType | null> {

@@ -19,7 +19,7 @@ export const BlogsService = {
         if (!['desc', 'asc'].includes(_sortDirection)) {
             _sortDirection = 'desc'
         }
-        debugger
+
         return await Blogs.getAll(searchNameTerm, _pageNumber, _pageSize, _sortBy, _sortDirection)
     },
 
