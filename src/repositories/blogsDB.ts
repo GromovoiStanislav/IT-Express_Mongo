@@ -28,7 +28,7 @@ export const Blogs = {
     async getAll(searchNameTerm:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<BlogViewType> {
 
         const filter:any = {}
-        if(searchNameTerm){filter.name = {$regex:searchNameTerm}}
+        if(searchNameTerm){filter.name = {$regex:searchNameTerm, $options: 'i'}}
 
         const items = await BlogsCollection
             .find(filter,  {projection: {_id: 0}})
