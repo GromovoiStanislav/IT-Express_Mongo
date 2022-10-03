@@ -21,14 +21,14 @@ export const PostsService = {
             _sortDirection = 'desc'
         }
 
-        return await Posts.getAll( _pageNumber, _pageSize, _sortBy, _sortDirection)
+        return await Posts.getAll(_pageNumber, _pageSize, _sortBy, _sortDirection)
     },
 
     async findByID(id: string): Promise<PostType | null> {
         return await Posts.findByID(id)
     },
 
-    async findByBlogID(blogId: string,pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
+    async findByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
 
         let _pageNumber = parseInt(pageNumber) || 1
         let _pageSize = parseInt(pageSize) || 10
@@ -38,10 +38,8 @@ export const PostsService = {
             _sortDirection = 'desc'
         }
 
-        return await Posts.getAllByBlogID(blogId , _pageNumber, _pageSize, _sortBy, _sortDirection)
+        return await Posts.getAllByBlogID(blogId, _pageNumber, _pageSize, _sortBy, _sortDirection)
     },
-
-
 
 
     async deleteByID(id: string): Promise<Boolean> {
@@ -60,5 +58,20 @@ export const PostsService = {
     async updatePost(id: string, data: PostType): Promise<Boolean> {
         return await Posts.updatePost(id, data)
     },
+
+
+    createNewByBlogID: async function (data: PostType): Promise<PostType | null> {
+        const blog = await Blogs.findByID(String(data.blogId))
+        if (blog) {
+            const blogName = blog ? blog.name : ""
+            const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName} // blog.name
+            const result = await Posts.createNewPost({...newPost})
+            return newPost
+        } else {
+            return null
+        }
+
+    },
+
 
 }

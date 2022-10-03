@@ -2,8 +2,8 @@ import {dbDemo} from "./db";
 
 export type BlogType = {
     id?: string,
-    name?: string,
-    youtubeUrl?: string,
+    name: string,
+    youtubeUrl: string,
     createdAt?: string,
 }
 

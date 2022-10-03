@@ -43,8 +43,30 @@ router.get('/:blogId/posts', async (req: Request, res: Response) => {
     }
 })
 
+//////////////////// START
+const postsValidator = [
+    body('title').trim().notEmpty().isString().isLength({max: 30}),
+    body('shortDescription').trim().isString().notEmpty().isLength({max: 100}),
+    body('content').trim().notEmpty().isString().isLength({max: 1000}),
+]
 
+router.post('/:blogId/posts', auth, postsValidator, inputValidation, async (req: Request, res: Response) => {
 
+    const data = {
+        title: req.body.title.trim(),
+        shortDescription: req.body.shortDescription.trim(),
+        content: req.body.content.trim(),
+        blogId: req.params.blogId,
+    }
+
+    const result = await PostsService.createNewByBlogID(data)
+    if (result) {
+        res.status(201).send(result)
+    } else {
+        res.sendStatus(404)
+    }
+})
+///////////////////// END
 
 router.delete('/:id', auth, async (req: Request, res: Response) => {
     const result = await BlogsService.deleteByID(req.params.id)
@@ -58,7 +80,6 @@ router.delete('/:id', auth, async (req: Request, res: Response) => {
 
 //const regex = new RegExp('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$')
 const regex:RegExp = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
-
 const validator = [
     body('name').trim().notEmpty().isString().isLength({max: 15}),
     body('youtubeUrl').trim().notEmpty().isString().isLength({max: 100}).matches(regex),
