@@ -1,5 +1,6 @@
 import {Router, Request, Response} from 'express'
 import {BlogsService} from '../domain/blogs-services'
+import {PostsService} from '../domain/posts-services'
 import {auth} from "../middlewares/authorization";
 import {body} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -27,6 +28,23 @@ router.get('/:id', async (req: Request, res: Response) => {
         res.sendStatus(404)
     }
 })
+
+router.get('/:blogId/posts', async (req: Request, res: Response) => {
+    const pageNumber = req.query.pageNumber?.toString() || ''
+    const pageSize = req.query.pageSize?.toString() || ''
+    const sortBy = req.query.sortBy?.toString() || ''
+    const sortDirection = req.query.desc?.toString() || ''
+
+    const result = await PostsService.findByBlogID(req.params.blogId,pageNumber,pageSize,sortBy,sortDirection )
+    if (result) {
+        res.send(result)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
+
+
 
 router.delete('/:id', auth, async (req: Request, res: Response) => {
     const result = await BlogsService.deleteByID(req.params.id)

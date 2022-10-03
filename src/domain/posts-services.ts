@@ -11,7 +11,7 @@ export const PostsService = {
         await Posts.clearAll()
     },
 
-    async getAll(pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType[]> {
+    async getAll(pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
 
         let _pageNumber = parseInt(pageNumber) || 1
         let _pageSize = parseInt(pageSize) || 10
@@ -27,6 +27,22 @@ export const PostsService = {
     async findByID(id: string): Promise<PostType | null> {
         return await Posts.findByID(id)
     },
+
+    async findByBlogID(blogId: string,pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
+
+        let _pageNumber = parseInt(pageNumber) || 1
+        let _pageSize = parseInt(pageSize) || 10
+        let _sortBy = sortBy || 'createdAt'
+        let _sortDirection = sortDirection || 'desc'
+        if (!['desc', 'asc'].includes(_sortDirection)) {
+            _sortDirection = 'desc'
+        }
+
+        return await Posts.getAllByBlogID(blogId , _pageNumber, _pageSize, _sortBy, _sortDirection)
+    },
+
+
+
 
     async deleteByID(id: string): Promise<Boolean> {
         return await Posts.deleteByID(id)
