@@ -1,5 +1,5 @@
-import {Posts, PostType, PostViewType} from "../repositories/postsDB";
-import {Blogs} from '../repositories/blogsDB'
+import {Posts, PostType, PostViewType} from "../repositories/posts";
+import {Blogs} from '../repositories/blogs'
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
@@ -70,8 +70,7 @@ export const PostsService = {
             return null
         }
 
-        const blogName = blog ? blog.name : ""
-        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName} // blog.name
+        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName:blog.name}
         const result = await Posts.createNewPost({...newPost})
         return newPost
 

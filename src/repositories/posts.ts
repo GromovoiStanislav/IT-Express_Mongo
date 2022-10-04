@@ -1,4 +1,6 @@
-import {Blogs} from './blogsDB'
+import {dbDemo} from "./db";
+import {BlogType} from "./blogs";
+
 
 export type PostType = {
     id?: string,
@@ -10,48 +12,86 @@ export type PostType = {
     createdAt?: string,
 }
 
-const PostsBD: Array<PostType> = []
+export type PostViewType = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: PostType[]
+}
 
-const uid = () => String(Date.now());
+
+const PostsCollection = dbDemo.collection<PostType>('posts')
+
 
 export const Posts = {
-    getAll() {
-        return PostsBD
+
+    async clearAll(): Promise<void> {
+        await PostsCollection.deleteMany({})
     },
 
-    clearAll() {
-        PostsBD.length = 0
+    async getAll(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
+        const filter:any = {}
+
+        const items = await PostsCollection
+            .find(filter,  {projection: {_id: 0}})
+            .limit(pageSize).skip((pageNumber-1)*pageSize)
+            .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
+            .toArray()
+
+        const totalCount = await PostsCollection.countDocuments(filter)
+
+        // @ts-ignore
+        const pagesCount = Math.ceil(totalCount/pageSize)
+        const page=pageNumber
+
+        // @ts-ignore
+        return {pagesCount,page,pageSize,totalCount,items}
+
     },
 
-    findByID(id: string) {
-        return PostsBD.find(v => v.id == id)
+
+    async getAllByBlogID(blogId : string, pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
+        const filter:any = {blogId:blogId }
+
+        const items = await PostsCollection
+            .find(filter,  {projection: {_id: 0}})
+            .limit(pageSize).skip((pageNumber-1)*pageSize)
+            .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
+            .toArray()
+
+        const totalCount = await PostsCollection.countDocuments(filter)
+
+        // @ts-ignore
+        const pagesCount = Math.ceil(totalCount/pageSize)
+        const page=pageNumber
+
+        // @ts-ignore
+        return {pagesCount,page,pageSize,totalCount,items}
+
     },
 
-    deleteByID(id:string){
-        const itemId = PostsBD.findIndex(v => v.id == id)
-        if (itemId >= 0) {
-            PostsBD.splice(itemId, 1)
-            return true
-        }
-        return false
+
+
+
+    async findByID(id: string): Promise<PostType | null> {
+        return await PostsCollection.findOne({id},{projection: {_id: 0}})
     },
 
-    async createNewPost(data: PostType) {
-        const blog = await Blogs.findByID(String(data.blogId))
-        const blogName = blog ? blog.name : ""
-        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName}
-        PostsBD.push(newPost)
-        return newPost
+    async deleteByID(id: string): Promise<Boolean> {
+        const result = await PostsCollection.deleteOne({id})
+        return result.deletedCount === 1
     },
 
-    updatePost(id:string,data:PostType){
-        const itemId = PostsBD.findIndex(v => v.id == id)
-        if (itemId == -1) {
-            return false
-        }
+    async createNewPost(data: PostType): Promise<PostType> {
+        const result = await PostsCollection.insertOne(data)
+        return data
+    },
 
-        PostsBD[itemId] = {...PostsBD[itemId], ...data}
-        return true
+    async updatePost(id: string, data: PostType): Promise<Boolean> {
+        const result = await PostsCollection.updateOne({id}, {$set: {...data}})
+        return result.matchedCount === 1
     },
 
 }
+

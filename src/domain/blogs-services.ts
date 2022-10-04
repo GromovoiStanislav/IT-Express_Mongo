@@ -1,4 +1,4 @@
-import {Blogs, BlogType, BlogViewType} from "../repositories/blogsDB";
+import {Blogs, BlogType, BlogViewType} from "../repositories/blogs";
 
 
 //const uid= ()=>Math.random().toString(36).substring(2)

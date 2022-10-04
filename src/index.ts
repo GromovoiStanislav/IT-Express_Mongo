@@ -1,6 +1,6 @@
 import express, { Request, Response,NextFunction} from 'express'
 import {runDB} from './repositories/db'
-import videosRouter,{clearAllVideos} from './routers/videosRouter'
+
 import blogsRouter,{clearAllBlogs} from './routers/blogsRouter'
 import postsRouter,{clearAllPosts} from './routers/postsRouter'
 
@@ -12,13 +12,13 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json());
 
-//app.use('/videos',videosRouter)
+
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
 
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
-   //await clearAllVideos()
+
     await clearAllBlogs()
     await clearAllPosts()
     res.sendStatus(204)
