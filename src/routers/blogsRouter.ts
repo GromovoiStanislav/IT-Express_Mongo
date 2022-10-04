@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express'
-import {BlogsService} from '../domain/blogs-services'
-import {PostsService} from '../domain/posts-services'
+import {BlogsService,BlogsQuery} from '../domain/blogs-services'
+import {PostsService,PostsQuery} from '../domain/posts-services'
 import {auth} from "../middlewares/authorization";
 import {body} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -16,12 +16,12 @@ router.get('/', async (req: Request, res: Response) => {
     const sortBy = req.query.sortBy?.toString() || ''
     const sortDirection = req.query.sortDirection?.toString() || ''
 
-    const result = await BlogsService.getAll(searchNameTerm,pageNumber,pageSize,sortBy,sortDirection)
+    const result = await BlogsQuery.getAll(searchNameTerm,pageNumber,pageSize,sortBy,sortDirection)
     res.send(result)
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
-    const item = await BlogsService.findByID(req.params.id)
+    const item = await BlogsQuery.findByID(req.params.id)
     if (item) {
         res.send(item)
     } else {
@@ -29,14 +29,14 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-//////////////////// START
+
 router.get('/:blogId/posts', async (req: Request, res: Response) => {
     const pageNumber = req.query.pageNumber?.toString() || ''
     const pageSize = req.query.pageSize?.toString() || ''
     const sortBy = req.query.sortBy?.toString() || ''
     const sortDirection = req.query.sortDirection?.toString() || ''
 
-    const result = await PostsService.findByBlogID(req.params.blogId,pageNumber,pageSize,sortBy,sortDirection )
+    const result = await PostsQuery.findPostByBlogID(req.params.blogId,pageNumber,pageSize,sortBy,sortDirection )
     if (result) {
         res.send(result)
     } else {
@@ -59,14 +59,14 @@ router.post('/:blogId/posts', auth, postsValidator, inputValidation, async (req:
         blogId: req.params.blogId,
     }
 
-    const result = await PostsService.createNewByBlogID(data)
+    const result = await PostsService.createNewPostByBlogID(data)
     if (result) {
         res.status(201).send(result)
     } else {
         res.sendStatus(404)
     }
 })
-///////////////////// END
+
 
 router.delete('/:id', auth, async (req: Request, res: Response) => {
     const result = await BlogsService.deleteByID(req.params.id)

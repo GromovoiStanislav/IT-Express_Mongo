@@ -1,6 +1,6 @@
 import {Router, Request, Response, NextFunction} from 'express'
-import {PostsService} from '../domain/posts-services'
-import {BlogsService} from '../domain/blogs-services'
+import {PostsService,PostsQuery} from '../domain/posts-services'
+import {BlogsQuery} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
@@ -15,12 +15,12 @@ router.get('/', async (req: Request, res: Response) => {
     const sortBy = req.query.sortBy?.toString() || ''
     const sortDirection = req.query.sortDirection?.toString() || ''
 
-    const result = await PostsService.getAll(pageNumber,pageSize,sortBy,sortDirection)
+    const result = await PostsQuery.getAll(pageNumber,pageSize,sortBy,sortDirection)
     res.send(result)
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
-    const item = await PostsService.findByID(req.params.id)
+    const item = await PostsQuery.findByID(req.params.id)
     if (item) {
         res.send(item)
     } else {
@@ -36,7 +36,7 @@ router.delete('/:id', auth, async (req: Request, res: Response) => {
     }
 })
 const isValidBlogId: CustomValidator = async (value) => {
-    const currentBlog = await BlogsService.findByID(value)
+    const currentBlog = await BlogsQuery.findByID(value)
     if (!currentBlog) {
         throw new Error('wrong blogId');
     }

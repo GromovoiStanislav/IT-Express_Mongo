@@ -1,15 +1,10 @@
 import {Posts, PostType, PostViewType} from "../repositories/posts";
-import {Blogs} from '../repositories/blogs'
+import {BlogsQuery} from './blogs-services'
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
 
-
-export const PostsService = {
-
-    async clearAll(): Promise<void> {
-        await Posts.clearAll()
-    },
+export const PostsQuery = {
 
     async getAll(pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
 
@@ -28,8 +23,8 @@ export const PostsService = {
         return await Posts.findByID(id)
     },
 
-    async findByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType | null> {
-        const blog = await Blogs.findByID(blogId)
+    async findPostByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType | null> {
+        const blog = await BlogsQuery.findByID(blogId)
         if (!blog) {
             return null
         }
@@ -46,12 +41,22 @@ export const PostsService = {
     },
 
 
+}
+
+
+export const PostsService = {
+
+    async clearAll(): Promise<void> {
+        await Posts.clearAll()
+    },
+
+
     async deleteByID(id: string): Promise<Boolean> {
         return await Posts.deleteByID(id)
     },
 
     async createNewPost(data: PostType): Promise<PostType> {
-        const blog = await Blogs.findByID(String(data.blogId))
+        const blog = await BlogsQuery.findByID(String(data.blogId))
         const blogName = blog ? blog.name : ""
         const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName}
 
@@ -64,8 +69,8 @@ export const PostsService = {
     },
 
 
-    createNewByBlogID: async function (data: PostType): Promise<PostType | null> {
-        const blog = await Blogs.findByID(String(data.blogId))
+    createNewPostByBlogID: async function (data: PostType): Promise<PostType | null> {
+        const blog = await BlogsQuery.findByID(String(data.blogId))
         if (!blog) {
             return null
         }
@@ -75,6 +80,5 @@ export const PostsService = {
         return newPost
 
     },
-
 
 }

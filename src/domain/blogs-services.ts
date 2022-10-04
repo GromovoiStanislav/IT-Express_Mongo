@@ -11,21 +11,7 @@ export const BlogsService = {
         await Blogs.clearAll()
     },
 
-    getAll: async function (searchNameTerm: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<BlogViewType> {
-        let _pageNumber = parseInt(pageNumber) || 1
-        let _pageSize = parseInt(pageSize) || 10
-        let _sortBy = sortBy || 'createdAt'
-        let _sortDirection = sortDirection || 'desc'
-        if (!['desc', 'asc'].includes(_sortDirection)) {
-            _sortDirection = 'desc'
-        }
 
-        return await Blogs.getAll(searchNameTerm, _pageNumber, _pageSize, _sortBy, _sortDirection)
-    },
-
-    async findByID(id: string): Promise<BlogType | null> {
-        return await Blogs.findByID(id)
-    },
 
     async deleteByID(id: string): Promise<Boolean> {
         return await Blogs.deleteByID(id)
@@ -43,3 +29,22 @@ export const BlogsService = {
 
 }
 
+export const BlogsQuery = {
+
+    getAll: async function (searchNameTerm: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<BlogViewType> {
+        let _pageNumber = parseInt(pageNumber) || 1
+        let _pageSize = parseInt(pageSize) || 10
+        let _sortBy = sortBy || 'createdAt'
+        let _sortDirection = sortDirection || 'desc'
+        if (!['desc', 'asc'].includes(_sortDirection)) {
+            _sortDirection = 'desc'
+        }
+
+        return await Blogs.getAll(searchNameTerm, _pageNumber, _pageSize, _sortBy, _sortDirection)
+    },
+
+    async findByID(id: string): Promise<BlogType | null> {
+        return await Blogs.findByID(id)
+    },
+
+}
