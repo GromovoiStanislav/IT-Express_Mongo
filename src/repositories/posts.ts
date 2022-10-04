@@ -31,7 +31,7 @@ export const Posts = {
     },
 
     async getAll(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
-        const filter:any = {}
+        const filter = {}
 
         const items = await PostsCollection
             .find(filter,  {projection: {_id: 0}})
@@ -39,20 +39,16 @@ export const Posts = {
             .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
             .toArray()
 
-        const totalCount = await PostsCollection.countDocuments(filter)
-
-        // @ts-ignore
+        const totalCount = await PostsCollection.countDocuments(filter)// @ts-ignore
         const pagesCount = Math.ceil(totalCount/pageSize)
-        const page=pageNumber
+        const page=pageNumber// @ts-ignore
 
-        // @ts-ignore
         return {pagesCount,page,pageSize,totalCount,items}
-
     },
 
 
     async getAllByBlogID(blogId : string, pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
-        const filter:any = {blogId:blogId }
+        const filter = {blogId:blogId }
 
         const items = await PostsCollection
             .find(filter,  {projection: {_id: 0}})
@@ -61,14 +57,10 @@ export const Posts = {
             .toArray()
 
         const totalCount = await PostsCollection.countDocuments(filter)
-
-        // @ts-ignore
         const pagesCount = Math.ceil(totalCount/pageSize)
         const page=pageNumber
 
-        // @ts-ignore
         return {pagesCount,page,pageSize,totalCount,items}
-
     },
 
 

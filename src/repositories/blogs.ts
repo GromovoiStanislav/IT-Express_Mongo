@@ -27,8 +27,11 @@ export const Blogs = {
 
     async getAll(searchNameTerm:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<BlogViewType> {
 
-        const filter:any = {}
-        if(searchNameTerm){filter.name = {$regex:searchNameTerm, $options: 'i'}}
+        // const filter:{name?:any} = {}
+        // if(searchNameTerm){filter.name = {$regex:searchNameTerm, $options: 'i'}}
+        const nameRegExp = RegExp(`${searchNameTerm||''}`,'i')
+        const filter={name:nameRegExp}
+
 
         const items = await BlogsCollection
             .find(filter,  {projection: {_id: 0}})
@@ -37,12 +40,9 @@ export const Blogs = {
             .toArray()
 
         const totalCount = await BlogsCollection.countDocuments(filter)
-
-        // @ts-ignore
         const pagesCount = Math.ceil(totalCount/pageSize)
         const page=pageNumber
 
-        // @ts-ignore
         return {pagesCount,page,pageSize,totalCount,items}
     },
 
