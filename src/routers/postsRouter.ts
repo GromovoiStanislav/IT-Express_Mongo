@@ -3,14 +3,14 @@ import {PostsService,PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
-import {defaultQuerySanitizer,inputValidation} from '../middlewares/input-validation'
-import {paginationParams} from "../types";
+import {paginationQuerySanitizer,inputValidation,paginationParams} from '../middlewares/input-validation'
+
 
 
 const router = Router();
 
 
-router.get('/', defaultQuerySanitizer, async (req: Request, res: Response) => {
+router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) => {
 
     const queryParams:paginationParams = {
         pageNumber:Number(req.query.pageNumber),

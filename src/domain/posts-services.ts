@@ -1,6 +1,6 @@
 import {Posts, PostType, PostViewType} from "../repositories/posts";
 import {BlogsQuery} from './blogs-services'
-import {paginationParams} from "../types";
+import {paginationParams} from "../middlewares/input-validation";
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());

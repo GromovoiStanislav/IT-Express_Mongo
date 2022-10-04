@@ -1,5 +1,5 @@
 import {dbDemo} from "./db";
-import {paginationParams} from "../types";
+import {paginationParams} from "../middlewares/input-validation";
 
 
 export type PostType = {

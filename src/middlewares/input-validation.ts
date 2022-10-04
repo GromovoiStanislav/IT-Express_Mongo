@@ -15,7 +15,7 @@ export const inputValidation =
         }
     }
 
-export const defaultQuerySanitizer = [
+export const paginationQuerySanitizer = [
     query('pageNumber').trim().toInt().default(1),
     query('pageSize').trim().toInt().default(10),
     query('sortBy').escape().trim().default('createdAt'),
@@ -27,3 +27,9 @@ export const defaultQuerySanitizer = [
     }),
 ]
 
+export type paginationParams = {
+    pageNumber:number,
+    pageSize:number,
+    sortBy:string,
+    sortDirection:string,
+}
