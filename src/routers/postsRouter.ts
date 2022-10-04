@@ -3,19 +3,23 @@ import {PostsService,PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
-import {inputValidation} from '../middlewares/input-validation'
+import {defaultQuerySanitizer,inputValidation} from '../middlewares/input-validation'
+import {paginationParams} from "../types";
 
 
 const router = Router();
 
 
-router.get('/', async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber?.toString() || ''
-    const pageSize = req.query.pageSize?.toString() || ''
-    const sortBy = req.query.sortBy?.toString() || ''
-    const sortDirection = req.query.sortDirection?.toString() || ''
+router.get('/', defaultQuerySanitizer, async (req: Request, res: Response) => {
 
-    const result = await PostsQuery.getAll(pageNumber,pageSize,sortBy,sortDirection)
+    const queryParams:paginationParams = {
+        pageNumber:Number(req.query.pageNumber),
+        pageSize:Number(req.query.pageSize),
+        sortBy:req.query.sortBy as string,
+        sortDirection:req.query.sortDirection as string,
+    }
+
+    const result = await PostsQuery.getAll(queryParams)
     res.send(result)
 })
 

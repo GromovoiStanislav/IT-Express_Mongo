@@ -1,27 +1,20 @@
 import {Posts, PostType, PostViewType} from "../repositories/posts";
 import {BlogsQuery} from './blogs-services'
+import {paginationParams} from "../types";
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
 
 export const PostsQuery = {
 
-    async getAll(pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType> {
-
-        let _pageNumber = parseInt(pageNumber) || 1
-        let _pageSize = parseInt(pageSize) || 10
-        let _sortBy = sortBy || 'createdAt'
-        let _sortDirection = sortDirection || 'desc'
-        if (!['desc', 'asc'].includes(_sortDirection)) {
-            _sortDirection = 'desc'
-        }
-
-        return await Posts.getAll(_pageNumber, _pageSize, _sortBy, _sortDirection)
+    async getAll(queryParams: paginationParams): Promise<PostViewType> {
+        return await Posts.getAll(queryParams)
     },
 
     async findByID(id: string): Promise<PostType | null> {
         return await Posts.findByID(id)
     },
+
 
     async findPostByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType | null> {
         const blog = await BlogsQuery.findByID(blogId)
@@ -75,7 +68,7 @@ export const PostsService = {
             return null
         }
 
-        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName:blog.name}
+        const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName: blog.name}
         const result = await Posts.createNewPost({...newPost})
         return newPost
 

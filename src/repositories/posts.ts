@@ -1,5 +1,5 @@
 import {dbDemo} from "./db";
-import {BlogType} from "./blogs";
+import {paginationParams} from "../types";
 
 
 export type PostType = {
@@ -24,13 +24,15 @@ export type PostViewType = {
 const PostsCollection = dbDemo.collection<PostType>('posts')
 
 
+
 export const Posts = {
 
     async clearAll(): Promise<void> {
         await PostsCollection.deleteMany({})
     },
 
-    async getAll(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
+
+    async getAll({pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PostViewType> {
         const filter = {}
 
         const items = await PostsCollection
