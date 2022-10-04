@@ -7,8 +7,8 @@ const uid = () => String(Date.now());
 
 export const PostsQuery = {
 
-    async getAll(queryParams: paginationParams): Promise<PostViewType> {
-        return await Posts.getAll(queryParams)
+    async getAll(paginationParams: paginationParams): Promise<PostViewType> {
+        return await Posts.getAll(paginationParams)
     },
 
     async findByID(id: string): Promise<PostType | null> {
@@ -16,21 +16,12 @@ export const PostsQuery = {
     },
 
 
-    async findPostByBlogID(blogId: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<PostViewType | null> {
+    async findPostByBlogID(blogId: string, paginationParams: paginationParams): Promise<PostViewType | null> {
         const blog = await BlogsQuery.findByID(blogId)
         if (!blog) {
             return null
         }
-
-        let _pageNumber = parseInt(pageNumber) || 1
-        let _pageSize = parseInt(pageSize) || 10
-        let _sortBy = sortBy || 'createdAt'
-        let _sortDirection = sortDirection || 'desc'
-        if (!['desc', 'asc'].includes(_sortDirection)) {
-            _sortDirection = 'desc'
-        }
-
-        return await Posts.getAllByBlogID(blogId, _pageNumber, _pageSize, _sortBy, _sortDirection)
+        return await Posts.getAllByBlogID(blogId, paginationParams)
     },
 
 

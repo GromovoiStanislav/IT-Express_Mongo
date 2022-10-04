@@ -1,4 +1,5 @@
 import {dbDemo} from "./db";
+import {paginationParams} from '../middlewares/input-validation'
 
 export type BlogType = {
     id?: string,
@@ -25,18 +26,16 @@ export const Blogs = {
         await BlogsCollection.deleteMany({})
     },
 
-    async getAll(searchNameTerm:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<BlogViewType> {
-
+    async getAll(searchNameTerm:string,{pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<BlogViewType> {
         // const filter:{name?:any} = {}
         // if(searchNameTerm){filter.name = {$regex:searchNameTerm, $options: 'i'}}
         const nameRegExp = RegExp(`${searchNameTerm||''}`,'i')
         const filter={name:nameRegExp}
 
-
         const items = await BlogsCollection
             .find(filter,  {projection: {_id: 0}})
-            .limit(pageSize).skip((pageNumber-1)*pageSize)
             .sort({[sortBy]: sortDirection==='asc' ? 1: -1 })
+            .limit(pageSize).skip((pageNumber-1)*pageSize)
             .toArray()
 
         const totalCount = await BlogsCollection.countDocuments(filter)

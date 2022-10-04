@@ -1,5 +1,5 @@
 import {Blogs, BlogType, BlogViewType} from "../repositories/blogs";
-
+import {paginationParams} from '../middlewares/input-validation'
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
@@ -10,7 +10,6 @@ export const BlogsService = {
     async clearAll(): Promise<void> {
         await Blogs.clearAll()
     },
-
 
 
     async deleteByID(id: string): Promise<Boolean> {
@@ -31,16 +30,8 @@ export const BlogsService = {
 
 export const BlogsQuery = {
 
-    getAll: async function (searchNameTerm: string, pageNumber: string, pageSize: string, sortBy: string, sortDirection: string): Promise<BlogViewType> {
-        let _pageNumber = parseInt(pageNumber) || 1
-        let _pageSize = parseInt(pageSize) || 10
-        let _sortBy = sortBy || 'createdAt'
-        let _sortDirection = sortDirection || 'desc'
-        if (!['desc', 'asc'].includes(_sortDirection)) {
-            _sortDirection = 'desc'
-        }
-
-        return await Blogs.getAll(searchNameTerm, _pageNumber, _pageSize, _sortBy, _sortDirection)
+    getAll: async function (searchNameTerm: string, paginationParams:paginationParams): Promise<BlogViewType> {
+        return await Blogs.getAll(searchNameTerm, paginationParams)
     },
 
     async findByID(id: string): Promise<BlogType | null> {

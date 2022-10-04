@@ -1,10 +1,9 @@
 import {Router, Request, Response, NextFunction} from 'express'
-import {PostsService,PostsQuery} from '../domain/posts-services'
+import {PostsService, PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
-import {paginationQuerySanitizer,inputValidation,paginationParams} from '../middlewares/input-validation'
-
+import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
 
 
 const router = Router();
@@ -12,14 +11,14 @@ const router = Router();
 
 router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) => {
 
-    const queryParams:paginationParams = {
-        pageNumber:Number(req.query.pageNumber),
-        pageSize:Number(req.query.pageSize),
-        sortBy:req.query.sortBy as string,
-        sortDirection:req.query.sortDirection as string,
+    const paginationParams: paginationParams = {
+        pageNumber: Number(req.query.pageNumber),
+        pageSize: Number(req.query.pageSize),
+        sortBy: req.query.sortBy as string,
+        sortDirection: req.query.sortDirection as string,
     }
 
-    const result = await PostsQuery.getAll(queryParams)
+    const result = await PostsQuery.getAll(paginationParams)
     res.send(result)
 })
 

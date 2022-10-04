@@ -2,21 +2,29 @@ import {Router, Request, Response} from 'express'
 import {BlogsService,BlogsQuery} from '../domain/blogs-services'
 import {PostsService,PostsQuery} from '../domain/posts-services'
 import {auth} from "../middlewares/authorization";
-import {body} from 'express-validator';
-import {inputValidation} from '../middlewares/input-validation'
+import {body,query} from 'express-validator';
+import {paginationQuerySanitizer,inputValidation,paginationParams} from '../middlewares/input-validation'
 
 
 const router = Router();
 
 
-router.get('/', async (req: Request, res: Response) => {
-    const searchNameTerm = req.query.searchNameTerm?.toString() || ''
-    const pageNumber = req.query.pageNumber?.toString() || ''
-    const pageSize = req.query.pageSize?.toString() || ''
-    const sortBy = req.query.sortBy?.toString() || ''
-    const sortDirection = req.query.sortDirection?.toString() || ''
+const paginationSanitizer =[
+    ...paginationQuerySanitizer,
+    query('searchNameTerm').escape().trim().default(''),
+]
 
-    const result = await BlogsQuery.getAll(searchNameTerm,pageNumber,pageSize,sortBy,sortDirection)
+router.get('/', paginationSanitizer, async (req: Request, res: Response) => {
+    const searchNameTerm = req.query.searchNameTerm as string
+
+    const paginationParams: paginationParams = {
+        pageNumber: Number(req.query.pageNumber),
+        pageSize: Number(req.query.pageSize),
+        sortBy: req.query.sortBy as string,
+        sortDirection: req.query.sortDirection as string,
+    }
+
+    const result = await BlogsQuery.getAll(searchNameTerm,paginationParams)
     res.send(result)
 })
 
@@ -30,13 +38,16 @@ router.get('/:id', async (req: Request, res: Response) => {
 })
 
 
-router.get('/:blogId/posts', async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber?.toString() || ''
-    const pageSize = req.query.pageSize?.toString() || ''
-    const sortBy = req.query.sortBy?.toString() || ''
-    const sortDirection = req.query.sortDirection?.toString() || ''
+router.get('/:blogId/posts',paginationQuerySanitizer, async (req: Request, res: Response) => {
 
-    const result = await PostsQuery.findPostByBlogID(req.params.blogId,pageNumber,pageSize,sortBy,sortDirection )
+    const paginationParams: paginationParams = {
+        pageNumber: Number(req.query.pageNumber),
+        pageSize: Number(req.query.pageSize),
+        sortBy: req.query.sortBy as string,
+        sortDirection: req.query.sortDirection as string,
+    }
+
+    const result = await PostsQuery.findPostByBlogID(req.params.blogId,paginationParams )
     if (result) {
         res.send(result)
     } else {

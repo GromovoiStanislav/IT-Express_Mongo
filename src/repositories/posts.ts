@@ -49,7 +49,7 @@ export const Posts = {
     },
 
 
-    async getAllByBlogID(blogId : string, pageNumber:number,pageSize:number,sortBy:string,sortDirection:string): Promise<PostViewType> {
+    async getAllByBlogID(blogId : string, {pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PostViewType> {
         const filter = {blogId:blogId }
 
         const items = await PostsCollection
