@@ -1,0 +1,24 @@
+DELETE http://localhost:3000/testing/all-data
+
+###
+POST http://localhost:3000/blogs
+Content-Type: "application/json"
+Authorization: "Basic YWRtaW46cXdlcnR5"
+
+{
+"name": "new blog",
+"youtubeUrl": "https://someurl.com"
+}
+
+###
+GET http://localhost:3000/blogs
+
+
+###
+GET http://localhost:3000/blogs?sortDirection=asc
+
+
+###
+GET http://localhost:3000/posts
+
+###
