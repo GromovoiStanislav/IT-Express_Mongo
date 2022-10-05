@@ -10,9 +10,9 @@ export async function runDB (){
     try {
         await  client.connect()
         await client.db('demo').command({ping:1})
-        console.log('MongoDB start')
+        //console.log('MongoDB start')
     }catch {
-        console.log(`Can't connect to MongoDB`)
+        //console.log(`Can't connect to MongoDB`)
         await client.close()
     }
 }
