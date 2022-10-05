@@ -35,5 +35,3 @@ const startApp = async ():Promise<void> => {
 }
 
 startApp();
-
-//https://it-students-demo.herokuapp.com/
