@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import {MongoClient} from 'mongodb'
 
-const mongoURL = process.env.mongoURI || ''//'mongodb://0.0.0.0:27017'
+const mongoURL = process.env.MONGO_URI || ''//'mongodb://0.0.0.0:27017'
 
 const client = new MongoClient(mongoURL)
 export const dbDemo= client.db('demo')

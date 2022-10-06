@@ -226,13 +226,12 @@ describe('blogs', () => {
         expect(res.body.items.length).toBe(10);
     });
 });
-describe('logs/id/posts', () => {
+describe('blogs/id/posts', () => {
     let newBlog = null;
     let newPost = null;
     beforeAll(async () => {
         await (0, supertest_1.default)(index_1.app).delete('/testing/all-data');
     });
-    // blogs/id/posts
     it('create post by blogId', async () => {
         //PREPARE
         let res = await (0, supertest_1.default)(index_1.app)
@@ -244,28 +243,99 @@ describe('logs/id/posts', () => {
             //.auth('admin', 'qwerty')
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5');
         newBlog = res.body;
-        ///START
+        ///START BAD
+        await (0, supertest_1.default)(index_1.app)
+            .post('/blogs/16/posts')
+            .send({
+            title: "post",
+            shortDescription: "new post",
+            content: "content of new post"
+        })
+            .auth('admin', 'qwerty')
+            .expect(404);
+        await (0, supertest_1.default)(index_1.app)
+            .post('/blogs/16/posts')
+            .send({
+            title: "post",
+            shortDescription: "new post",
+            content: "content of new post"
+        })
+            .auth('admin', '123')
+            .expect(401);
+        await (0, supertest_1.default)(index_1.app)
+            .post('/blogs/16/posts')
+            .send({
+            title: "",
+            shortDescription: "new post",
+            content: "content of new post"
+        })
+            .auth('admin', 'qwerty')
+            .expect(400, {
+            "errorsMessages": [
+                {
+                    "message": 'Invalid value',
+                    "field": "title"
+                }
+            ]
+        });
+        await (0, supertest_1.default)(index_1.app)
+            .post(`/blogs/${newBlog.id}/posts`)
+            .send({
+            title: "post",
+            shortDescription: "new post",
+            content: "content of new post"
+        })
+            .auth('admin', '123')
+            .expect(401);
+        await (0, supertest_1.default)(index_1.app)
+            .post(`/blogs/${newBlog.id}/posts`)
+            .send({
+            title: "",
+            shortDescription: "new post",
+            content: "content of new post"
+        })
+            .auth('admin', 'qwerty')
+            .expect(400, {
+            "errorsMessages": [
+                {
+                    "message": 'Invalid value',
+                    "field": "title"
+                }
+            ]
+        });
+        ///START GOOD
         res = await (0, supertest_1.default)(index_1.app)
             .post(`/blogs/${newBlog.id}/posts`)
             .send({
             title: "post",
             shortDescription: "new post",
-            content: "content of new blog"
+            content: "content of new post"
         })
-            //.auth('admin', 'qwerty')
-            .set('Authorization', 'Basic YWRtaW46cXdlcnR5');
+            .auth('admin', 'qwerty');
         expect(res.status).toBe(201);
         newPost = res.body;
-        expect(newBlog).toEqual({
+        expect(newPost).toEqual({
             id: expect.any(String),
             title: "post",
-            shortDescription: "new blog",
-            content: "content of new blog",
+            shortDescription: "new post",
+            content: "content of new post",
             blogId: newBlog.id,
             blogName: "new blog",
             createdAt: expect.any(String)
         });
         await (0, supertest_1.default)(index_1.app).get('/posts')
+            .expect(200, {
+            pagesCount: 1,
+            page: 1,
+            pageSize: 10,
+            totalCount: 1,
+            items: [newPost]
+        });
+    });
+    it('get posts by blogId', async () => {
+        await (0, supertest_1.default)(index_1.app).get('/blogs/16/posts')
+            .expect(404);
+        await (0, supertest_1.default)(index_1.app).get(`/blogs/${newBlog.id}/posts`)
             .expect(200, {
             pagesCount: 1,
             page: 1,

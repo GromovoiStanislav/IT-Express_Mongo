@@ -3,6 +3,7 @@ import {runDB} from './repositories/db'
 
 import blogsRouter,{clearAllBlogs} from './routers/blogsRouter'
 import postsRouter,{clearAllPosts} from './routers/postsRouter'
+import {emailAdapter} from "./adapters/email-adapter";
 
 export const app = express()
 const PORT = process.env.PORT || 3000
@@ -15,6 +16,11 @@ app.use('/posts',postsRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     await clearAllBlogs()
     await clearAllPosts()
+    res.sendStatus(204)
+})
+
+app.post('/email/send',async (req: Request, res: Response) => {
+    let info = await emailAdapter.sendEmail(req.body.email,req.body.subject,req.body.message)
     res.sendStatus(204)
 })
 
@@ -36,4 +42,3 @@ const startApp = async ():Promise<void> => {
 
 startApp();
 
-//https://it-students-demo.herokuapp.com/
