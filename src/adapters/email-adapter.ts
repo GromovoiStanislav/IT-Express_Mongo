@@ -23,6 +23,4 @@ export const emailAdapter = {
             console.log(e)
         }
     }
-
-
 }
