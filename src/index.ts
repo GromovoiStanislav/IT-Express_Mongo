@@ -26,10 +26,10 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
     res.sendStatus(204)
 })
 
-app.post('/email/send',async (req: Request, res: Response) => {
-    let info = await emailAdapter.sendEmail(req.body.email,req.body.subject,req.body.message)
-    res.sendStatus(204)
-})
+// app.post('/email/send',async (req: Request, res: Response) => {
+//     let info = await emailAdapter.sendEmail(req.body.email,req.body.subject,req.body.message)
+//     res.sendStatus(204)
+// })
 
 app.use((req:Request, res:Response,next:NextFunction) => {
     res.sendStatus(404)
