@@ -1,4 +1,3 @@
-import {BlogType} from "../repositories/blogs";
 
 export type UserInputModel = {
     login: string,

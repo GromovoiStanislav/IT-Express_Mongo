@@ -4,7 +4,6 @@ import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
 
 
-
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
 
@@ -40,22 +39,31 @@ export const UsersService = {
     },
 
 
+    async loginUser(login: string, password: string): Promise<Boolean> {
+        const user = await Users.getUserByLogin(login)
+        if(!user) return false
+        return await this._comparePassword(password, user.password)
+    },
+
     async _generateHash(password: string): Promise<string> {
-        const solt = await bcryptjs.genSalt(10)
-        return await bcryptjs.hash(password, solt)
-        //const soltFromHash = await bcryptjs.getSalt(hash)
+        return await bcryptjs.hash(password, 10)
+    },
+
+    async _comparePassword(password: string, hash: string): Promise<boolean> {
+        return await bcryptjs.compare(password, hash)
     }
+
 
 }
 
 export const UsersQuery = {
 
-    async getAll (searchLoginTerm: string, searchEmailTerm: string,paginationParams:paginationParams): Promise<UsersViewModel> {
+    async getAll(searchLoginTerm: string, searchEmailTerm: string, paginationParams: paginationParams): Promise<UsersViewModel> {
 
-        const result = await Users.getAll(searchLoginTerm,searchEmailTerm, paginationParams)
+        const result = await Users.getAll(searchLoginTerm, searchEmailTerm, paginationParams)
 
         //На всякий случай
-        result.items = result.items.map(el=>({
+        result.items = result.items.map(el => ({
             id: el.id,
             login: el.login,
             email: el.email,

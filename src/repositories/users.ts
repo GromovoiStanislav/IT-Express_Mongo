@@ -59,6 +59,11 @@ export const Users = {
     },
 
 
+    async getUserByLogin(login:string):Promise<UserType| null>{
+        return await UsersCollection
+            .findOne({login})
+    },
+
     async deleteByID(id: string): Promise<Boolean> {
         const result = await UsersCollection.deleteOne({id})
         return result.deletedCount === 1

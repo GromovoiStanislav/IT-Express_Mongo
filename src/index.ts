@@ -4,6 +4,7 @@ import {runDB} from './repositories/db'
 import blogsRouter,{clearAllBlogs} from './routers/blogsRouter'
 import postsRouter,{clearAllPosts} from './routers/postsRouter'
 import usersRouter,{clearAllUsers} from './routers/usersRouter'
+import authRouter from './routers/authRouter'
 
 import {emailAdapter} from "./adapters/email-adapter";
 
@@ -15,6 +16,8 @@ app.use(express.json());
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
 app.use('/users',usersRouter)
+app.use('/auth',authRouter)
+
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     await clearAllBlogs()
