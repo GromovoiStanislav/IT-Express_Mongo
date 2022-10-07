@@ -3,6 +3,8 @@ import {runDB} from './repositories/db'
 
 import blogsRouter,{clearAllBlogs} from './routers/blogsRouter'
 import postsRouter,{clearAllPosts} from './routers/postsRouter'
+import usersRouter,{clearAllUsers} from './routers/usersRouter'
+
 import {emailAdapter} from "./adapters/email-adapter";
 
 export const app = express()
@@ -12,10 +14,12 @@ app.use(express.json());
 
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
+app.use('/users',usersRouter)
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     await clearAllBlogs()
     await clearAllPosts()
+    await clearAllUsers()
     res.sendStatus(204)
 })
 
