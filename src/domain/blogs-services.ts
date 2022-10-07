@@ -30,7 +30,7 @@ export const BlogsService = {
 
 export const BlogsQuery = {
 
-    getAll: async function (searchNameTerm: string, paginationParams:paginationParams): Promise<BlogViewType> {
+    async getAll(searchNameTerm: string, paginationParams:paginationParams): Promise<BlogViewType> {
         return await Blogs.getAll(searchNameTerm, paginationParams)
     },
 

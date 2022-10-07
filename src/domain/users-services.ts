@@ -1,6 +1,9 @@
 import {Users, UserType} from "../repositories/users";
-import {UserInputModel, UserViewModel} from "../types/users";
-import bcript from 'bcryptjs'
+import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
+import bcryptjs from 'bcryptjs'
+import {paginationParams} from '../middlewares/input-validation'
+
+
 
 //const uid= ()=>Math.random().toString(36).substring(2)
 const uid = () => String(Date.now());
@@ -16,7 +19,7 @@ export const UsersService = {
         return await Users.deleteByID(id)
     },
 
-    createNewUser: async function (data: UserInputModel): Promise<UserViewModel> {
+    async createNewUser(data: UserInputModel): Promise<UserViewModel> {
 
         const newUser: UserType = {
             login: data.login,
@@ -38,14 +41,29 @@ export const UsersService = {
 
 
     async _generateHash(password: string): Promise<string> {
-        const solt = await bcript.genSalt(10)
-        const hash = await bcript.hash(password, solt)
-        console.log('hash',hash)
-        console.log('solt',solt)
-        const soltFromHash = await bcript.getSalt(hash)
-        console.log('solt from hash',soltFromHash)
-        return hash
+        const solt = await bcryptjs.genSalt(10)
+        return await bcryptjs.hash(password, solt)
+        //const soltFromHash = await bcryptjs.getSalt(hash)
     }
+
+}
+
+export const UsersQuery = {
+
+    async getAll (searchLoginTerm: string, searchEmailTerm: string,paginationParams:paginationParams): Promise<UsersViewModel> {
+
+        const result = await Users.getAll(searchLoginTerm,searchEmailTerm, paginationParams)
+
+        //На всякий случай
+        result.items = result.items.map(el=>({
+            id: el.id,
+            login: el.login,
+            email: el.email,
+            createdAt: el.createdAt,
+        }))
+
+        return result
+    },
 
 }
 

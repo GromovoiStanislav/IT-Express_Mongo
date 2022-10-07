@@ -1,3 +1,5 @@
+import {BlogType} from "../repositories/blogs";
+
 export type UserInputModel = {
     login: string,
     password: string,
@@ -9,4 +11,12 @@ export type UserViewModel = {
     login: string,
     email: string
     createdAt: string,
+}
+
+export type UsersViewModel = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: UserViewModel[]
 }
