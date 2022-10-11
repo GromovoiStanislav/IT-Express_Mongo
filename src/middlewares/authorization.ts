@@ -25,6 +25,7 @@ export const authJWT = async (req: Request, res: Response, next: NextFunction) =
     if(userId){
         req.user = await UsersService.findUserById(userId)
         next()
+        return
     }
 
     res.sendStatus(401)
