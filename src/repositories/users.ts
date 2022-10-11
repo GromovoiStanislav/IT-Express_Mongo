@@ -3,7 +3,7 @@ import {paginationParams} from '../middlewares/input-validation'
 import {UsersViewModel} from "../types/users";
 
 
-export type UserType = {
+export type UserDBType = {
     id: string,
     login: string,
     password: string,
@@ -11,7 +11,7 @@ export type UserType = {
     createdAt: string,
 }
 
-const UsersCollection = dbDemo.collection<UserType>('users')
+const UsersCollection = dbDemo.collection<UserDBType>('users')
 
 export const Users = {
     async clearAll(): Promise<void> {
@@ -59,17 +59,24 @@ export const Users = {
     },
 
 
-    async getUserByLogin(login:string):Promise<UserType| null>{
+    async getUserByLogin(login:string):Promise<UserDBType| null>{
         return await UsersCollection
             .findOne({login})
     },
+
+    async getUserById(id:string):Promise<UserDBType| null>{
+        return await UsersCollection
+            .findOne({id})
+    },
+
+
 
     async deleteByID(id: string): Promise<Boolean> {
         const result = await UsersCollection.deleteOne({id})
         return result.deletedCount === 1
     },
 
-    async createNewUser(data: UserType): Promise<Boolean> {
+    async createNewUser(data: UserDBType): Promise<Boolean> {
         await UsersCollection.insertOne(data)
         return true
     },

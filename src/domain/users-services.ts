@@ -1,7 +1,8 @@
-import {Users, UserType} from "../repositories/users";
+import {UserDBType, Users} from "../repositories/users";
 import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
+import {jwtService} from "../aplicarion/jwt-service";
 
 
 //const uid= ()=>Math.random().toString(36).substring(2)
@@ -20,7 +21,7 @@ export const UsersService = {
 
     async createNewUser(data: UserInputModel): Promise<UserViewModel> {
 
-        const newUser: UserType = {
+        const newUser: UserDBType = {
             login: data.login,
             email: data.email,
             password: await this._generateHash(data.password),
@@ -39,10 +40,20 @@ export const UsersService = {
     },
 
 
-    async loginUser(login: string, password: string): Promise<Boolean> {
+    async findUserById(userID: string): Promise<UserDBType | null> {
+        return await Users.getUserById(userID)
+
+    },
+
+    async loginUser(login: string, password: string): Promise<string | undefined> {
         const user = await Users.getUserByLogin(login)
-        if(!user) return false
-        return await this._comparePassword(password, user.password)
+        if (!user) return undefined
+
+        const compareOK = await this._comparePassword(password, user.password)
+        if (compareOK) {
+            return jwtService.createJWT(user)
+        }
+
     },
 
     async _generateHash(password: string): Promise<string> {
