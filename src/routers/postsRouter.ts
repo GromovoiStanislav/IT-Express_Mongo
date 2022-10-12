@@ -83,7 +83,7 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
 })
 
 
-router.get('/posts/:postId /comments', paginationQuerySanitizer, async (req: Request, res: Response) => {
+router.get('/:postId/comments', paginationQuerySanitizer, async (req: Request, res: Response) => {
 
     const isFind = await PostsQuery.findByID(req.params.postId)
     if(!isFind){return  res.sendStatus(404)}
@@ -110,10 +110,10 @@ const CommentsValidator = [
     body('content').trim().notEmpty().isString().isLength({min: 20, max: 300}),
 ]
 
-router.post('/posts/:postId /comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
+router.post('/:postId/comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
 
-    const isFind = await PostsQuery.findByID(req.params.postId)
-    if(!isFind){return  res.sendStatus(404)}
+    // const isFind = await PostsQuery.findByID(req.params.postId)
+    // if(!isFind){return res.sendStatus(404)}
 
     const data:CommentInputModel = {content: req.body.content.trim()}
     const result = await CommentsService.createByPostId(req.params.postId, req!.user!.id,req!.user!.login, data)
