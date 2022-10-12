@@ -4,7 +4,7 @@ import {authJWT} from "../middlewares/authorization";
 import {body, query} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
 import {CommentsService, CommentsQuery} from "../domain/comments-services";
-
+import {CommentInputModel} from "../types/comments";
 
 const router = Router();
 
@@ -34,8 +34,8 @@ const CommentsValidator = [
 ]
 
 router.put('/:id', authJWT, CommentsValidator, inputValidation, async (req: Request, res: Response) => {
-    const content =  req.body.content.trim()
-    const result = await CommentsService.updateByID(req.params.id, req!.user!.id,content)
+    const data:CommentInputModel = {content: req.body.content.trim()}
+    const result = await CommentsService.updateByID(req.params.id, req!.user!.id,data)
     res.sendStatus(result)
 })
 

@@ -4,7 +4,7 @@ import {BlogsQuery} from '../domain/blogs-services'
 import {auth} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
-
+import { CommentsQuery} from "../domain/comments-services";
 
 const router = Router();
 
@@ -79,6 +79,24 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
         res.sendStatus(404)
     }
 
+})
+
+
+router.get('/posts/:postId /comments', paginationQuerySanitizer, async (req: Request, res: Response) => {
+
+    const paginationParams: paginationParams = {
+        pageNumber: Number(req.query.pageNumber),
+        pageSize: Number(req.query.pageSize),
+        sortBy: req.query.sortBy as string,
+        sortDirection: req.query.sortDirection as string,
+    }
+
+    const item = await CommentsQuery.findAllByPostId(req.params.postId,paginationParams)
+    if (item) {
+        res.send(item)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 
