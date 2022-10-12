@@ -1,6 +1,6 @@
-import {Comments,CommentDBType} from "../repositories/comments";
+import {CommentDBType, Comments} from "../repositories/comments";
 import {paginationParams} from '../middlewares/input-validation'
-import {CommentInputModel, CommentViewModel, CommentsViewModel} from "../types/comments";
+import {CommentInputModel, CommentsViewModel, CommentViewModel} from "../types/comments";
 
 
 const uid = () => String(Date.now());
@@ -28,7 +28,7 @@ export const CommentsService = {
         return 404
     },
 
-    async updateByID(id: string, userId: string, data:CommentInputModel): Promise<number> {
+    async updateByID(id: string, userId: string, data: CommentInputModel): Promise<number> {
         let res = await Comments.findByID(id)
         if (!res) {
             return 404
@@ -37,7 +37,7 @@ export const CommentsService = {
             return 403
         }
 
-        let result = await Comments.updateByID(id,data)
+        let result = await Comments.updateByID(id, data)
         if (result) {
             return 204
         }
@@ -45,11 +45,11 @@ export const CommentsService = {
     },
 
 
-    async createByPostId(postId: string, userId: string, userLogin:string , data: CommentInputModel): Promise<CommentViewModel> {
+    async createByPostId(postId: string, userId: string, userLogin: string, data: CommentInputModel): Promise<CommentViewModel> {
 
-        const newComment:CommentDBType = {
+        const newComment: CommentDBType = {
             id: uid(),
-            postId:postId,
+            postId: postId,
             content: data.content,
             userId: userId,
             userLogin: userLogin,
@@ -58,7 +58,13 @@ export const CommentsService = {
 
         await Comments.createNew({...newComment})
 
-        return newComment
+        return {
+            id: newComment.id,
+            content: newComment.content,
+            userId: newComment.userId,
+            userLogin: newComment.userLogin,
+            createdAt: newComment.createdAt,
+        }
     },
 
 
@@ -69,24 +75,25 @@ export const CommentsQuery = {
     async findByID(id: string): Promise<CommentViewModel | null> {
         const res = await Comments.findByID(id)
 
-        if(!res){return null}
-
-        const result = {
-                id: res.id,
-                content: res.content,
-                userId: res.userId,
-                userLogin: res.userLogin,
-                createdAt: res.createdAt,
+        if (!res) {
+            return null
         }
-        return result
+
+        return {
+            id: res.id,
+            content: res.content,
+            userId: res.userId,
+            userLogin: res.userLogin,
+            createdAt: res.createdAt,
+        }
 
 
     },
 
 
-    async findAllByPostId(postId: string, paginationParams:paginationParams): Promise<CommentsViewModel | null> {
+    async findAllByPostId(postId: string, paginationParams: paginationParams): Promise<CommentsViewModel | null> {
 
-        const result =  await Comments.findAllByPostId(postId, paginationParams)
+        const result = await Comments.findAllByPostId(postId, paginationParams)
         result.items = result.items.map(el => ({
             id: el.id,
             content: el.content,
