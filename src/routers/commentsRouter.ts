@@ -18,7 +18,7 @@ export const clearAllComments = async () => {
 router.get('/:id', async (req: Request, res: Response) => {
     const result = await CommentsQuery.findByID(req.params.id)
     if (result) {
-        res.sendStatus(200)
+        res.status(200).send(result)
     } else {
         res.sendStatus(404)
     }
