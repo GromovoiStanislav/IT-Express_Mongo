@@ -112,8 +112,8 @@ const CommentsValidator = [
 
 router.post('/:postId/comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
 
-    // const isFind = await PostsQuery.findByID(req.params.postId)
-    // if(!isFind){return res.sendStatus(404)}
+    const isFind = await PostsQuery.findByID(req.params.postId)
+    if(!isFind){return res.sendStatus(404)}
 
     const data:CommentInputModel = {content: req.body.content.trim()}
     const result = await CommentsService.createByPostId(req.params.postId, req!.user!.id,req!.user!.login, data)
