@@ -5,6 +5,7 @@ import {body, query} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
 import {CommentsService, CommentsQuery} from "../domain/comments-services";
 import {CommentInputModel} from "../types/comments";
+import {PostsQuery} from "../domain/posts-services";
 
 const router = Router();
 

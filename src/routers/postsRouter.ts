@@ -1,10 +1,11 @@
 import {Router, Request, Response, NextFunction} from 'express'
 import {PostsService, PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
-import {auth} from "../middlewares/authorization";
+import {auth,authJWT} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
-import { CommentsQuery} from "../domain/comments-services";
+import {CommentsQuery, CommentsService} from "../domain/comments-services";
+import {CommentInputModel} from "../types/comments";
 
 const router = Router();
 
@@ -84,6 +85,10 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
 
 router.get('/posts/:postId /comments', paginationQuerySanitizer, async (req: Request, res: Response) => {
 
+    const isFind = await PostsQuery.findByID(req.params.postId)
+    if(!isFind){return  res.sendStatus(404)}
+
+
     const paginationParams: paginationParams = {
         pageNumber: Number(req.query.pageNumber),
         pageSize: Number(req.query.pageSize),
@@ -98,6 +103,24 @@ router.get('/posts/:postId /comments', paginationQuerySanitizer, async (req: Req
         res.sendStatus(404)
     }
 })
+
+
+
+const CommentsValidator = [
+    body('content').trim().notEmpty().isString().isLength({min: 20, max: 300}),
+]
+
+router.post('/posts/:postId /comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
+
+    const isFind = await PostsQuery.findByID(req.params.postId)
+    if(!isFind){return  res.sendStatus(404)}
+
+    const data:CommentInputModel = {content: req.body.content.trim()}
+    const result = await CommentsService.createByPostId(req.params.postId, req!.user!.id,req!.user!.login, data)
+    res.status(201).send(result)
+
+})
+
 
 
 export const clearAllPosts = async () => {

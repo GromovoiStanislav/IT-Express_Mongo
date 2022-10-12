@@ -1,7 +1,6 @@
-import {Comments,CommentType} from "../repositories/comments";
+import {Comments,CommentDBType} from "../repositories/comments";
 import {paginationParams} from '../middlewares/input-validation'
 import {CommentInputModel, CommentViewModel, CommentsViewModel} from "../types/comments";
-import {PostsQuery} from "./posts-services";
 
 
 const uid = () => String(Date.now());
@@ -46,6 +45,22 @@ export const CommentsService = {
     },
 
 
+    async createByPostId(postId: string, userId: string, userLogin:string , data: CommentInputModel): Promise<CommentViewModel> {
+
+        const newComment:CommentDBType = {
+            id: uid(),
+            postId:postId,
+            content: data.content,
+            userId: userId,
+            userLogin: userLogin,
+            createdAt: new Date().toISOString(),
+        }
+
+        await Comments.createNew({...newComment})
+
+        return newComment
+    },
+
 
 }
 
@@ -70,10 +85,6 @@ export const CommentsQuery = {
 
 
     async findAllByPostId(postId: string, paginationParams:paginationParams): Promise<CommentsViewModel | null> {
-
-        const res = await PostsQuery.findByID(postId)
-        if(!res){return null}
-
 
         const result =  await Comments.findAllByPostId(postId, paginationParams)
         result.items = result.items.map(el => ({

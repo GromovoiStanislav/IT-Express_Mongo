@@ -4,7 +4,9 @@ import {paginationParams} from "../middlewares/input-validation";
 
 
 
-export type CommentType = {
+
+export type CommentDBType = {
+    _id?: string,
     id: string,
     postId:string,
     content: string,
@@ -14,7 +16,7 @@ export type CommentType = {
 }
 
 
-const CommentsCollection = dbDemo.collection<CommentType>('comments')
+const CommentsCollection = dbDemo.collection<CommentDBType>('comments')
 
 export const Comments = {
 
@@ -28,7 +30,7 @@ export const Comments = {
     },
 
 
-    async findByID(id: string): Promise<CommentType | null> {
+    async findByID(id: string): Promise<CommentDBType | null> {
         return await CommentsCollection.findOne({id},{projection: {_id: 0}})
     },
 
@@ -58,7 +60,10 @@ export const Comments = {
         return {pagesCount, page, pageSize, totalCount, items}
     },
 
-
+    async createNew(data: CommentDBType): Promise<Boolean> {
+        await CommentsCollection.insertOne(data)
+        return true
+    },
 
 
 }
