@@ -69,8 +69,31 @@ router.post('/registration-confirmation', validatorConfirmation, inputValidation
             }
         ]
     })
-
 })
+
+
+////////////////////////////// registration-email-resending /////////////////////////
+const isEmailAlreadyConfirmed: CustomValidator = async (value) => {
+    const user = await Users.getUserByEmail(value)
+    if (!user) {
+        throw new Error('email is incorrect')
+    }
+    if (user.emailConfirmation?.isConfirmed) {
+        throw new Error('email is already confirmed')
+    }
+    return true;
+}
+const validatorEmailResending = [
+    body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailAlreadyConfirmed),
+]
+router.post('/registration-email-resending', validatorEmailResending, inputValidation, async (req: Request, res: Response) => {
+    await UsersService.resendConfirmationCode(req.body.email)
+    res.sendStatus(204)
+})
+
+
+
+
 
 
 ////////////////////////////// login //////////////////////////////////////////////

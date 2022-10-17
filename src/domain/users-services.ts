@@ -64,6 +64,34 @@ export const UsersService = {
         return true
     },
 
+
+    async resendConfirmationCode(email: string): Promise<Boolean> {
+        const user = await Users.getUserByEmail(email)
+        if (!user) {
+            return false
+        }
+        if (user.emailConfirmation?.isConfirmed) {
+            return false
+        }
+
+        const subject = 'Thank for your registration'
+        const confirmation_code = uuidv4()
+        const message = `<a href='${settings.URL}/auth/registration-confirmation?code=${confirmation_code}'>complete registration</a>`
+
+        const isEmailSended = await emailAdapter.sendEmail(user.email, subject, message)
+        if(isEmailSended){
+            await Users.updateConfirmCode(user.id,confirmation_code)
+            return true
+        }
+        return false
+    },
+
+
+
+
+/////////////////////////////////////////////////////////
+
+
     async createNewUser(dataUser: UserInputModel): Promise<UserViewModel> {
 
         const newUser: UserDBType = {

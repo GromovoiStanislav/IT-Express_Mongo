@@ -89,6 +89,11 @@ export const Users = {
     },
 
 
+    async updateConfirmCode(id: string,confirmationCode:string): Promise<Boolean> {
+        const result = await UsersCollection.updateOne({id},{$set: {'emailConfirmation.confirmationCode': confirmationCode}})
+        return result.modifiedCount === 1
+    },
+
     async getUserById(id:string):Promise<UserDBType| null>{
         return UsersCollection
             .findOne({id})
