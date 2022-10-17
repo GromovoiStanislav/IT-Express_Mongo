@@ -73,9 +73,19 @@ export const Users = {
             .findOne({email})
     },
 
-    async getUserByLoginOrEmail(login:string,email:string):Promise<UserDBType| null>{
+    async getUserByLoginOrEmail(loginOrEmail:string):Promise<UserDBType| null>{
         return UsersCollection
-            .findOne({$or:[{login},{email}]})
+            .findOne({$or:[{login:loginOrEmail},{email:loginOrEmail}]})
+    },
+
+    async getUserByConfirmationCode(confirmationCode:string):Promise<UserDBType| null>{
+        return UsersCollection
+            .findOne({'emailConfirmation.confirmationCode':confirmationCode})
+    },
+
+    async confirmUser(id: string): Promise<Boolean> {
+        const result = await UsersCollection.updateOne({id},{$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1
     },
 
 

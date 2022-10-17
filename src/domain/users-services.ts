@@ -50,6 +50,19 @@ export const UsersService = {
         return false
     },
 
+    async confirmEmail(confirmationCode: string): Promise<Boolean> {
+
+        const user = await Users.getUserByConfirmationCode(confirmationCode)
+        if (!user) {
+            return false
+        }
+        if (user.emailConfirmation?.isConfirmed) {
+            return false
+        }
+
+        await Users.confirmUser(user.id)
+        return true
+    },
 
     async createNewUser(dataUser: UserInputModel): Promise<UserViewModel> {
 

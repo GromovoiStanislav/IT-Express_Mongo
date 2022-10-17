@@ -7,27 +7,31 @@ import {authJWT} from "../middlewares/authorization";
 import {Users} from "../repositories/users";
 
 
-
 const router = Router();
 
-const isLoginExistAlready : CustomValidator = async (value) => {
+////////////////////////////// registration //////////////////////////////////////////////
+const isLoginExistAlready: CustomValidator = async (value) => {
     const userExist = await Users.getUserByLogin(value)
-    if(userExist){ throw new Error('login already exist');}
+    if (userExist) {
+        throw new Error('login already exist')
+    }
     return true;
 }
-const isEmailExistAlready : CustomValidator = async (value) => {
+const isEmailExistAlready: CustomValidator = async (value) => {
     const userExist = await Users.getUserByEmail(value)
-    if(userExist){ throw new Error('email already exist');}
+    if (userExist) {
+        throw new Error('email already exist')
+    }
     return true;
 }
 const validatorRegistration = [
-    body('login').trim().notEmpty().isString().isLength({min:3, max: 10}).custom(isLoginExistAlready),
-    body('password').trim().notEmpty().isString().isLength({min:6, max: 20}),
+    body('login').trim().notEmpty().isString().isLength({min: 3, max: 10}).custom(isLoginExistAlready),
+    body('password').trim().notEmpty().isString().isLength({min: 6, max: 20}),
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailExistAlready),
 ]
 router.post('/registration', validatorRegistration, inputValidation, async (req: Request, res: Response) => {
 
-    const dataUser:UserInputModel = {
+    const dataUser: UserInputModel = {
         login: req.body.login,
         password: req.body.password,
         email: req.body.email,
@@ -37,13 +41,43 @@ router.post('/registration', validatorRegistration, inputValidation, async (req:
 })
 
 
+////////////////////////////// registration-confirmation //////////////////////////////////////////////
+// const isConfirmedAlready: CustomValidator = async (value) => {
+//     const userExist = await Users.getUserByConfirmationCode(value)
+//     if (!userExist) {
+//         throw new Error('Confirmation code is incorrect')
+//     }
+//     if (userExist.emailConfirmation?.isConfirmed) {
+//         throw new Error('Account already was activated')
+//     }
+//     return true;
+// }
+const validatorConfirmation = [
+    body('code').trim().notEmpty().isString(),
+]
+router.post('/registration-confirmation', validatorConfirmation, inputValidation, async (req: Request, res: Response) => {
+    const result = await UsersService.confirmEmail(req.body.code)
+    if (result) {
+        return res.sendStatus(204)
+    }
+
+    res.status(400).send({
+        errorsMessages: [
+            {
+                message: 'Confirmation code is incorrect',
+                field: "code"
+            }
+        ]
+    })
+
+})
 
 
+////////////////////////////// login //////////////////////////////////////////////
 const validatorLogin = [
     body('login').trim().notEmpty(),
     body('password').trim().notEmpty(),
 ]
-
 router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
 
     const JWTAccessToken = await UsersService.loginUser(req.body.login, req.body.password)
@@ -51,9 +85,10 @@ router.post('/login', validatorLogin, inputValidation, async (req: Request, res:
         return res.sendStatus(401)
     }
     res.status(200).send({accessToken: JWTAccessToken})
-
 })
 
+
+////////////////////////////// me //////////////////////////////////////////////
 router.get('/me', authJWT, async (req: Request, res: Response) => {
 
     res.status(200).send({
@@ -61,7 +96,6 @@ router.get('/me', authJWT, async (req: Request, res: Response) => {
         "login": req.user!.login,
         "userId": req.user!.id,
     })
-
 })
 
 
