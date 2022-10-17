@@ -3,10 +3,10 @@ import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
 import {jwtService} from "../aplicarion/jwt-service";
+import {emailAdapter} from "../adapters/email-adapter";
+import {settings} from '../settigs'
+import { v4 as uuidv4 } from 'uuid'
 
-
-//const uid= ()=>Math.random().toString(36).substring(2)
-const uid = () => String(Date.now());
 
 
 export const UsersService = {
@@ -19,13 +19,45 @@ export const UsersService = {
         return await Users.deleteByID(id)
     },
 
-    async createNewUser(data: UserInputModel): Promise<UserViewModel> {
+
+    async registerUser(dataUser: UserInputModel): Promise<Boolean> {
+        const subject = 'Thank for your registration'
+        const confirmation_code = uuidv4()
+        const message = `
+        <div>
+           <h1>Thank for your registration</h1>
+           <p>To finish registration please follow the link below:
+              <a href='${settings.URL}/auth/registration-confirmation?code=${confirmation_code}'>complete registration</a>
+          </p>
+        </div>`
+
+        const isEmailSended = await emailAdapter.sendEmail(dataUser.email, subject, message)
+        if(isEmailSended){
+            const newUser: UserDBType = {
+                login: dataUser.login,
+                email: dataUser.email,
+                password: await this._generateHash(dataUser.password),
+                id: uuidv4(),
+                createdAt: new Date().toISOString(),
+                emailConfirmation:{
+                    confirmationCode: confirmation_code,
+                    isConfirmed: false,
+                }
+            }
+            await Users.createNewUser({...newUser})
+            return true
+        }
+        return false
+    },
+
+
+    async createNewUser(dataUser: UserInputModel): Promise<UserViewModel> {
 
         const newUser: UserDBType = {
-            login: data.login,
-            email: data.email,
-            password: await this._generateHash(data.password),
-            id: uid(),
+            login: dataUser.login,
+            email: dataUser.email,
+            password: await this._generateHash(dataUser.password),
+            id: uuidv4(),
             createdAt: new Date().toISOString(),
         }
 

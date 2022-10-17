@@ -2,7 +2,7 @@ import 'dotenv/config'
 import nodemailer from 'nodemailer'
 
 export const emailAdapter = {
-    async sendEmail(email: string, subject: string, message: string) {
+    async sendEmail(email: string, subject: string, message: string):Promise<boolean> {
 
         const transport = nodemailer.createTransport({
             service: 'gmail',
@@ -19,8 +19,10 @@ export const emailAdapter = {
                 subject: subject,
                 html: message,
             })
+            return  true
         } catch (e) {
             console.log(e)
+            return  false
         }
     }
 }

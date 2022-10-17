@@ -9,6 +9,10 @@ export type UserDBType = {
     password: string,
     email: string
     createdAt: string,
+    emailConfirmation?:{
+        confirmationCode: string,
+        isConfirmed:boolean,
+    }
 }
 
 const UsersCollection = dbDemo.collection<UserDBType>('users')
@@ -60,12 +64,23 @@ export const Users = {
 
 
     async getUserByLogin(login:string):Promise<UserDBType| null>{
-        return await UsersCollection
+        return UsersCollection
             .findOne({login})
     },
 
+    async getUserByEmail(email:string):Promise<UserDBType| null>{
+        return UsersCollection
+            .findOne({email})
+    },
+
+    async getUserByLoginOrEmail(login:string,email:string):Promise<UserDBType| null>{
+        return UsersCollection
+            .findOne({$or:[{login},{email}]})
+    },
+
+
     async getUserById(id:string):Promise<UserDBType| null>{
-        return await UsersCollection
+        return UsersCollection
             .findOne({id})
     },
 
