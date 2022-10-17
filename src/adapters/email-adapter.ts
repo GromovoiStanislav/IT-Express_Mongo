@@ -1,5 +1,5 @@
-import 'dotenv/config'
 import nodemailer from 'nodemailer'
+import {settings} from '../settigs'
 
 export const emailAdapter = {
     async sendEmail(email: string, subject: string, message: string):Promise<boolean> {
@@ -7,14 +7,14 @@ export const emailAdapter = {
         const transport = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD
+                user: settings.EMAIL,
+                pass: settings.EMAIL_PASSWORD
             }
         })
 
         try {
             await transport.sendMail({
-                from: `Stas <${process.env.EMAIL}>`,
+                from: `Stas <${settings.EMAIL}>`,
                 to: email,
                 subject: subject,
                 html: message,
