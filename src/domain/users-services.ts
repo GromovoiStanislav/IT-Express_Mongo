@@ -23,13 +23,7 @@ export const UsersService = {
     async registerUser(dataUser: UserInputModel): Promise<Boolean> {
         const subject = 'Thank for your registration'
         const confirmation_code = uuidv4()
-        const message = `
-        <div>
-           <h1>Thank for your registration</h1>
-           <p>To finish registration please follow the link below:
-              <a href='${settings.URL}/auth/registration-confirmation?code=${confirmation_code}'>complete registration</a>
-          </p>
-        </div>`
+        const message = `<a href='https://somesite.com/confirm-email?code=${confirmation_code}'>complete registration</a>`
 
         const isEmailSended = await emailAdapter.sendEmail(dataUser.email, subject, message)
         if(isEmailSended){
@@ -76,7 +70,7 @@ export const UsersService = {
 
         const subject = 'Thank for your registration'
         const confirmation_code = uuidv4()
-        const message = `<a href='${settings.URL}/auth/registration-confirmation?code=${confirmation_code}'>complete registration</a>`
+        const message = `<a href='https://somesite.com/confirm-email?code=${confirmation_code}'>complete registration</a>`
 
         const isEmailSended = await emailAdapter.sendEmail(user.email, subject, message)
         if(isEmailSended){
