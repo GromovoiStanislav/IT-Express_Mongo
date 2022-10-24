@@ -136,7 +136,7 @@ export const UsersService = {
         if (!refreshToken) {
             return null
         }
-        if(!await refreshTokens.findToken(refreshToken)) {
+        if(await refreshTokens.findToken(refreshToken)) {
             return null
         }
         const userId = await jwtService.getUserIdByToken(refreshToken)
@@ -155,7 +155,7 @@ export const UsersService = {
         if (!refreshToken) {
             return false
         }
-        if(!await refreshTokens.findToken(refreshToken)) {
+        if(await refreshTokens.findToken(refreshToken)) {
             return false
         }
         if (!await jwtService.getUserIdByToken(refreshToken)) {
