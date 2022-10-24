@@ -121,6 +121,21 @@ router.post('/logout', async (req: Request, res: Response) => {
 })
 
 
+////////////////////////////// logout //////////////////////////////////////////////
+router.post('/refresh-token', async (req: Request, res: Response) => {
+    const JWT_Tokens = await UsersService.refreshTokens(req.cookies.refreshToken)
+    if (!JWT_Tokens) {
+        return res.sendStatus(401)
+    }
+    res.cookie('refreshToken', JWT_Tokens.refreshToken, {
+        maxAge: 1000 * 20,
+        httpOnly: true,
+        secure: true,
+    })
+    res.status(200).send({accessToken: JWT_Tokens.accessToken})
+})
+
+
 ////////////////////////////// me //////////////////////////////////////////////
 router.get('/me', authJWT, async (req: Request, res: Response) => {
 

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import {settings} from '../settigs'
-import {UserDBType} from "../repositories/users";
+
 
 
 type userJWT = {
@@ -10,9 +10,9 @@ type userJWT = {
 
 export const jwtService = {
 
-    async createJWT(user: UserDBType, expiresIn: string): Promise<string> {
+    async createJWT(userId: string, expiresIn: string): Promise<string> {
         return jwt.sign(
-            {userId: user.id},
+            {userId},
             settings.JWT_SECRET,
             {expiresIn})
     },

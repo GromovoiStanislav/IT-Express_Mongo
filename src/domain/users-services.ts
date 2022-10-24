@@ -123,10 +123,28 @@ export const UsersService = {
             const compareOK = await this._comparePassword(password, user.password)
             if (compareOK) {
                 return {
-                    accessToken: await jwtService.createJWT(user, '10s'),
-                    refreshToken: await jwtService.createJWT(user, '20s'),
+                    accessToken: await jwtService.createJWT(user.id, '10s'),
+                    refreshToken: await jwtService.createJWT(user.id, '20s'),
                 }
             }
+        }
+        return null
+    },
+
+    async refreshTokens(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+        if (!refreshToken) {
+            return null
+        }
+        if(!await refreshTokens.findToken(refreshToken)) {
+            return null
+        }
+        const userId = await jwtService.getUserIdByToken(refreshToken)
+        if (userId) {
+                await refreshTokens.addNewToken(refreshToken)
+                return {
+                    accessToken: await jwtService.createJWT(userId, '10s'),
+                    refreshToken: await jwtService.createJWT(userId, '20s'),
+                }
         }
         return null
     },
