@@ -1,5 +1,5 @@
 import {UserDBType, Users} from "../repositories/users";
-import {refreshTokenDBType, refreshTokens} from "../repositories/refreshTokens";
+import { refreshTokens} from "../repositories/refreshTokens";
 import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
@@ -14,6 +14,7 @@ export const UsersService = {
 
     async clearAll(): Promise<void> {
         await Users.clearAll()
+        await refreshTokens.clearAll()
     },
 
     async deleteByID(id: string): Promise<Boolean> {
