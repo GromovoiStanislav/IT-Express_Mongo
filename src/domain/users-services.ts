@@ -5,8 +5,7 @@ import {paginationParams} from '../middlewares/input-validation'
 import {jwtService} from "../aplicarion/jwt-service";
 import {emailAdapter} from "../adapters/email-adapter";
 import {settings} from '../settigs'
-import { v4 as uuidv4 } from 'uuid'
-
+import {v4 as uuidv4} from 'uuid'
 
 
 export const UsersService = {
@@ -32,14 +31,14 @@ export const UsersService = {
         </div>`
 
         const isEmailSended = await emailAdapter.sendEmail(dataUser.email, subject, message)
-        if(isEmailSended){
+        if (isEmailSended) {
             const newUser: UserDBType = {
                 login: dataUser.login,
                 email: dataUser.email,
                 password: await this._generateHash(dataUser.password),
                 id: uuidv4(),
                 createdAt: new Date().toISOString(),
-                emailConfirmation:{
+                emailConfirmation: {
                     confirmationCode: confirmation_code,
                     isConfirmed: false,
                 }
@@ -79,14 +78,12 @@ export const UsersService = {
         const message = `<a href='${settings.URL}/auth/registration-confirmation?code=${confirmation_code}'>complete registration</a>`
 
         const isEmailSended = await emailAdapter.sendEmail(user.email, subject, message)
-        if(isEmailSended){
-            await Users.updateConfirmCode(user.id,confirmation_code)
+        if (isEmailSended) {
+            await Users.updateConfirmCode(user.id, confirmation_code)
             return true
         }
         return false
     },
-
-
 
 
 /////////////////////////////////////////////////////////
@@ -118,15 +115,18 @@ export const UsersService = {
 
     },
 
-    async loginUser(login: string, password: string): Promise<string | undefined> {
+    async loginUser(login: string, password: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         const user = await Users.getUserByLogin(login)
-        if (!user) return undefined
-
-        const compareOK = await this._comparePassword(password, user.password)
-        if (compareOK) {
-            return jwtService.createJWT(user)
+        if (user) {
+            const compareOK = await this._comparePassword(password, user.password)
+            if (compareOK) {
+                return {
+                    accessToken: await jwtService.createJWT(user, '10s'),
+                    refreshToken: await jwtService.createJWT(user, '20s'),
+                }
+            }
         }
-
+        return null
     },
 
     async _generateHash(password: string): Promise<string> {

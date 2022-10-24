@@ -107,7 +107,12 @@ router.post('/login', validatorLogin, inputValidation, async (req: Request, res:
     if (!JWTAccessToken) {
         return res.sendStatus(401)
     }
-    res.status(200).send({accessToken: JWTAccessToken})
+    res.cookie('token', JWTAccessToken.refreshToken,{
+        maxAge: 1000 * 20,
+        httpOnly:true,
+        secure: true,
+    })
+    res.status(200).send({accessToken: JWTAccessToken.accessToken})
 })
 
 
