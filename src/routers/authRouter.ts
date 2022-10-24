@@ -92,10 +92,6 @@ router.post('/registration-email-resending', validatorEmailResending, inputValid
 })
 
 
-
-
-
-
 ////////////////////////////// login //////////////////////////////////////////////
 const validatorLogin = [
     body('login').trim().notEmpty(),
@@ -103,16 +99,25 @@ const validatorLogin = [
 ]
 router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
 
-    const JWTAccessToken = await UsersService.loginUser(req.body.login, req.body.password)
-    if (!JWTAccessToken) {
+    const JWT_Tokens = await UsersService.loginUser(req.body.login, req.body.password)
+    if (!JWT_Tokens) {
         return res.sendStatus(401)
     }
-    res.cookie('token', JWTAccessToken.refreshToken,{
+    res.cookie('refreshToken', JWT_Tokens.refreshToken, {
         maxAge: 1000 * 20,
-        httpOnly:true,
+        httpOnly: true,
         secure: true,
     })
-    res.status(200).send({accessToken: JWTAccessToken.accessToken})
+    res.status(200).send({accessToken: JWT_Tokens.accessToken})
+})
+
+////////////////////////////// logout //////////////////////////////////////////////
+router.post('/logout', async (req: Request, res: Response) => {
+    const isOK = await UsersService.logoutUser(req.cookies.refreshToken)
+    if (isOK) {
+       return res.sendStatus(204)
+    }
+    res.sendStatus(401)
 })
 
 

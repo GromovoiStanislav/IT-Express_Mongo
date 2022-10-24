@@ -1,4 +1,5 @@
 import {UserDBType, Users} from "../repositories/users";
+import {refreshTokenDBType, refreshTokens} from "../repositories/refreshTokens";
 import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
@@ -6,6 +7,7 @@ import {jwtService} from "../aplicarion/jwt-service";
 import {emailAdapter} from "../adapters/email-adapter";
 import {settings} from '../settigs'
 import {v4 as uuidv4} from 'uuid'
+
 
 
 export const UsersService = {
@@ -128,6 +130,22 @@ export const UsersService = {
         }
         return null
     },
+
+
+    async logoutUser(refreshToken: string): Promise<boolean> {
+        if (!refreshToken) {
+            return false
+        }
+        if(!await refreshTokens.findToken(refreshToken)) {
+            return false
+        }
+        if (!await jwtService.getUserIdByToken(refreshToken)) {
+            return false
+        }
+        await refreshTokens.addNewToken(refreshToken)
+        return true
+    },
+
 
     async _generateHash(password: string): Promise<string> {
         return await bcryptjs.hash(password, 10)
