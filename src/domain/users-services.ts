@@ -1,5 +1,5 @@
 import {UserDBType, Users} from "../repositories/users";
-import { refreshTokens} from "../repositories/refreshTokens";
+import {refreshTokenDBType, refreshTokens} from "../repositories/refreshTokens";
 import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
@@ -9,19 +9,22 @@ import {settings} from '../settigs'
 import {v4 as uuidv4} from 'uuid'
 
 
-
 export const UsersService = {
 
+    /////////////////////////////////
     async clearAll(): Promise<void> {
         await Users.clearAll()
         await refreshTokens.clearAll()
     },
 
+
+    //////////////////////////////////////////
     async deleteByID(id: string): Promise<Boolean> {
         return await Users.deleteByID(id)
     },
 
 
+    ////////////////////////////////////////////////
     async registerUser(dataUser: UserInputModel): Promise<Boolean> {
         const subject = 'Thank for your registration'
         const confirmation_code = uuidv4()
@@ -52,6 +55,8 @@ export const UsersService = {
         return false
     },
 
+
+    /////////////////////////////////////
     async confirmEmail(confirmationCode: string): Promise<Boolean> {
 
         const user = await Users.getUserByConfirmationCode(confirmationCode)
@@ -67,6 +72,7 @@ export const UsersService = {
     },
 
 
+    ////////////////////////////////////////
     async resendConfirmationCode(email: string): Promise<Boolean> {
         const user = await Users.getUserByEmail(email)
         if (!user) {
@@ -89,9 +95,7 @@ export const UsersService = {
     },
 
 
-/////////////////////////////////////////////////////////
-
-
+    //////////////////////////////////////////
     async createNewUser(dataUser: UserInputModel): Promise<UserViewModel> {
 
         const newUser: UserDBType = {
@@ -113,63 +117,65 @@ export const UsersService = {
     },
 
 
+    ////////////////////////////////
     async findUserById(userID: string): Promise<UserDBType | null> {
         return await Users.getUserById(userID)
 
     },
 
-    async loginUser(login: string, password: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+
+    //////////////////////////////////
+    async loginUser(login: string, password: string, ip: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         const user = await Users.getUserByLogin(login)
         if (user) {
             const compareOK = await this._comparePassword(password, user.password)
             if (compareOK) {
+                const deviceId = uuidv4() // т.е. это Сессия
                 return {
-                    accessToken: await jwtService.createJWT(user.id, '10s'),
-                    refreshToken: await jwtService.createJWT(user.id, '20s'),
+                    accessToken: await jwtService.createAuthJWT(user.id),
+                    refreshToken: await jwtService.createRefreshJWT(user.id, deviceId, ip)
                 }
             }
         }
         return null
     },
 
-    async refreshTokens(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+
+    /////////////////////////////////////////////
+    async refreshToken(refreshToken: string, ip: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         if (!refreshToken) {
             return null
         }
-        if(await refreshTokens.findToken(refreshToken)) {
-            return null
+
+        const result = await jwtService.getInfoByToken(refreshToken)
+        if (result) {
+            return {
+                accessToken: await jwtService.createAuthJWT(result.userId),
+                refreshToken: await jwtService.createRefreshJWT(result.userId, result.deviceId, ip),
+            }
         }
-        const userId = await jwtService.getUserIdByToken(refreshToken)
-        if (userId) {
-                await refreshTokens.addNewToken(refreshToken)
-                return {
-                    accessToken: await jwtService.createJWT(userId, '10s'),
-                    refreshToken: await jwtService.createJWT(userId, '20s'),
-                }
-        }
+
         return null
     },
 
 
-    async logoutUser(refreshToken: string): Promise<boolean> {
+    //////////////////////////////////////////
+    async logoutUser(refreshToken: string): Promise<Boolean> {
         if (!refreshToken) {
             return false
         }
-        if(await refreshTokens.findToken(refreshToken)) {
-            return false
-        }
-        if (!await jwtService.getUserIdByToken(refreshToken)) {
-            return false
-        }
-        await refreshTokens.addNewToken(refreshToken)
-        return true
+        return jwtService.killSessionByToken(refreshToken)
+
     },
 
 
+    ///////////////////////////////////////////////
     async _generateHash(password: string): Promise<string> {
         return await bcryptjs.hash(password, 10)
     },
 
+
+    ////////////////////////////////////////////
     async _comparePassword(password: string, hash: string): Promise<boolean> {
         return await bcryptjs.compare(password, hash)
     }

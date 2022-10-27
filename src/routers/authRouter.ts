@@ -99,7 +99,7 @@ const validatorLogin = [
 ]
 router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
 
-    const JWT_Tokens = await UsersService.loginUser(req.body.login, req.body.password)
+    const JWT_Tokens = await UsersService.loginUser(req.body.login, req.body.password, req.ip)
     if (!JWT_Tokens) {
         return res.sendStatus(401)
     }
@@ -111,11 +111,12 @@ router.post('/login', validatorLogin, inputValidation, async (req: Request, res:
     res.status(200).send({accessToken: JWT_Tokens.accessToken})
 })
 
+
 ////////////////////////////// logout //////////////////////////////////////////////
 router.post('/logout', async (req: Request, res: Response) => {
     const isOK = await UsersService.logoutUser(req.cookies.refreshToken)
     if (isOK) {
-       return res.sendStatus(204)
+        return res.sendStatus(204)
     }
     res.sendStatus(401)
 })
@@ -123,7 +124,7 @@ router.post('/logout', async (req: Request, res: Response) => {
 
 ////////////////////////////// logout //////////////////////////////////////////////
 router.post('/refresh-token', async (req: Request, res: Response) => {
-    const JWT_Tokens = await UsersService.refreshTokens(req.cookies.refreshToken)
+    const JWT_Tokens = await UsersService.refreshToken(req.cookies.refreshToken, req.ip)
     if (!JWT_Tokens) {
         return res.sendStatus(401)
     }
