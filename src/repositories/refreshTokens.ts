@@ -15,7 +15,7 @@ const TokensCollection = dbDemo.collection<refreshTokenDBType>('refreshTokens')
 export const refreshTokens = {
 
     async clearAll(): Promise<void> {
-        await TokensCollection.deleteMany({})
+        //await TokensCollection.deleteMany({})
     },
 
     async getAllByUserId(userId: string): Promise<refreshTokenDBType[]> {
@@ -27,8 +27,8 @@ export const refreshTokens = {
         return result.deletedCount === 1
     },
 
-    async deleteAllOtherExcludeDeviceId(deviceId: string,userId:string): Promise<boolean> {
-        const result = await TokensCollection.deleteMany({userId,deviceId: { $ne: deviceId }}) /// todo
+    async deleteAllOtherExcludeDeviceId(deviceId: string, userId: string): Promise<boolean> {
+        const result = await TokensCollection.deleteMany({userId: userId, deviceId: {$ne: deviceId}})
         return result.deletedCount > 0
     },
 

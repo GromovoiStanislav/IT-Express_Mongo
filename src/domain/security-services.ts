@@ -32,8 +32,10 @@ export const SecurityService = {
 
     /////////////////////////////////////////
     async deleteByDeviceId(refreshToken: string, deviceId: string): Promise<number> {
+
         const dataFromDeviceId = await refreshTokens.findByDeviceId(deviceId)
         const dataFromToken = await jwtService.getInfoByToken(refreshToken)
+
         if (!dataFromToken) {
             return 401
         }
