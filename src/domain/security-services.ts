@@ -46,7 +46,7 @@ export const SecurityService = {
             return 403
         }
 
-        await refreshTokens.deleteByDeviceId(dataFromToken.deviceId)
+        await refreshTokens.deleteByDeviceId(deviceId)
         return 204
     },
 

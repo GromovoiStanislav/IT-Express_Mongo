@@ -15,7 +15,7 @@ const TokensCollection = dbDemo.collection<refreshTokenDBType>('refreshTokens')
 export const refreshTokens = {
 
     async clearAll(): Promise<void> {
-        //await TokensCollection.deleteMany({})
+        await TokensCollection.deleteMany({})
     },
 
     async getAllByUserId(userId: string): Promise<refreshTokenDBType[]> {
