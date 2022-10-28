@@ -36,7 +36,7 @@ export const jwtService = {
             ip,
             title,
             issuedAt: new Date(issuedAt).toISOString(),
-            expiresIn: new Date(issuedAt+20).toISOString(),
+            expiresIn: new Date(issuedAt+20*1000).toISOString(),
         }
 
         const refreshToken = jwt.sign(
@@ -51,13 +51,13 @@ export const jwtService = {
 
 
     ////////////////////////////////////
-    async getInfoByToken(token: string): Promise<{ userId: string, deviceId: string } | null> {
+    async getInfoByToken(refreshToken: string): Promise<{ userId: string, deviceId: string } | null> {
         try {
-            const decoded = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
+            const decoded = jwt.verify(refreshToken, settings.JWT_SECRET) as RefreshJWT
 
             const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
             if (!result) {
-                return null
+                //return null
             }
 
             return {

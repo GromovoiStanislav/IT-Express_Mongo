@@ -20,7 +20,7 @@ export const SecurityService = {
 
 
     /////////////////////////////////////////
-    async deleteAllOtherExcludeCarrentDeviceId(refreshToken: string): Promise<boolean> {
+    async deleteAllOtherExcludeCurrentDeviceId(refreshToken: string): Promise<boolean> {
         const dataFromToken = await jwtService.getInfoByToken(refreshToken)
         if (!dataFromToken) {
             return false

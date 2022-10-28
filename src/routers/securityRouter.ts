@@ -19,7 +19,7 @@ router.get('/devices', async (req: Request, res: Response) => {
 
 //////////////////////////////////
 router.delete('/devices', async (req: Request, res: Response) => {
-    const result = await SecurityService.deleteAllOtherExcludeCarrentDeviceId(req.cookies.refreshToken)
+    const result = await SecurityService.deleteAllOtherExcludeCurrentDeviceId(req.cookies.refreshToken)
     if (!result) {
         return res.sendStatus(401)
     }
