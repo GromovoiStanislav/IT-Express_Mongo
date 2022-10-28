@@ -25,7 +25,7 @@ export const SecurityService = {
         if (!dataFromToken) {
             return false
         }
-        return refreshTokens.deleteAllOtherExcludeDeviceId(dataFromToken.deviceId)
+        return refreshTokens.deleteAllOtherExcludeDeviceId(dataFromToken.deviceId,dataFromToken.userId)
 
     },
 

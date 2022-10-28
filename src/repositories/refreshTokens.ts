@@ -27,8 +27,8 @@ export const refreshTokens = {
         return result.deletedCount === 1
     },
 
-    async deleteAllOtherExcludeDeviceId(deviceId: string): Promise<boolean> {
-        const result = await TokensCollection.deleteMany({deviceId}) /// todo
+    async deleteAllOtherExcludeDeviceId(deviceId: string,userId:string): Promise<boolean> {
+        const result = await TokensCollection.deleteMany({userId,deviceId: { $ne: deviceId }}) /// todo
         return result.deletedCount > 0
     },
 
