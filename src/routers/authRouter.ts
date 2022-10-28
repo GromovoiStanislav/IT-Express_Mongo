@@ -5,10 +5,10 @@ import {UserInputModel} from "../types/users";
 import {UsersService} from "../domain/users-services";
 import {authJWT} from "../middlewares/authorization";
 import {Users} from "../repositories/users";
-import {limiter} from "../middlewares/limiter";
+import {limiter, MyLimiter} from "../middlewares/limiter";
 
 const router = Router();
-
+const myLimiter = new MyLimiter(5, 10)
 
 
 ////////////////////////////// registration //////////////////////////////////////////////
@@ -31,7 +31,11 @@ const validatorRegistration = [
     body('password').trim().notEmpty().isString().isLength({min: 6, max: 20}),
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailExistAlready),
 ]
-router.post('/registration', validatorRegistration, inputValidation, limiter(5, 1000 * 10), async (req: Request, res: Response) => {
+router.post('/registration', validatorRegistration, inputValidation, async (req: Request, res: Response) => {
+
+    if (myLimiter.stop(req.ip, '/registration')) {
+        return res.sendStatus(429)
+    }
 
     const dataUser: UserInputModel = {
         login: req.body.login,
@@ -57,7 +61,12 @@ router.post('/registration', validatorRegistration, inputValidation, limiter(5, 
 const validatorConfirmation = [
     body('code').trim().notEmpty().isString(),
 ]
-router.post('/registration-confirmation', validatorConfirmation, inputValidation, limiter(5, 1000 * 10), async (req: Request, res: Response) => {
+router.post('/registration-confirmation', validatorConfirmation, inputValidation, async (req: Request, res: Response) => {
+
+    if (myLimiter.stop(req.ip, '/registration-confirmation')) {
+        return res.sendStatus(429)
+    }
+
     const result = await UsersService.confirmEmail(req.body.code)
     if (result) {
         return res.sendStatus(204)
@@ -88,7 +97,12 @@ const isEmailAlreadyConfirmed: CustomValidator = async (value) => {
 const validatorEmailResending = [
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailAlreadyConfirmed),
 ]
-router.post('/registration-email-resending', validatorEmailResending, inputValidation, limiter(5, 1000 * 10), async (req: Request, res: Response) => {
+router.post('/registration-email-resending', validatorEmailResending, inputValidation, async (req: Request, res: Response) => {
+
+    if (myLimiter.stop(req.ip, '/registration-email-resending')) {
+        return res.sendStatus(429)
+    }
+
     await UsersService.resendConfirmationCode(req.body.email)
     res.sendStatus(204)
 })
@@ -99,7 +113,12 @@ const validatorLogin = [
     body('login').trim().notEmpty(),
     body('password').trim().notEmpty(),
 ]
-router.post('/login', validatorLogin, inputValidation, limiter(5, 1000 * 10), async (req: Request, res: Response) => {
+router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
+
+    if (myLimiter.stop(req.ip, '/login')) {
+        return res.sendStatus(429)
+    }
+
     let title = req.header('user-agent') ?? ''
     title = title.split(' ')[0]
 
