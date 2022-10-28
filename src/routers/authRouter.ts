@@ -98,8 +98,10 @@ const validatorLogin = [
     body('password').trim().notEmpty(),
 ]
 router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
+    let title = req.header('User-Agent') ?? ''
+    title = title.substring(0, title.indexOf(' '))
 
-    const JWT_Tokens = await UsersService.loginUser(req.body.login, req.body.password, req.ip)
+    const JWT_Tokens = await UsersService.loginUser(req.body.login, req.body.password, req.ip, title)
     if (!JWT_Tokens) {
         return res.sendStatus(401)
     }
@@ -124,7 +126,10 @@ router.post('/logout', async (req: Request, res: Response) => {
 
 ////////////////////////////// logout //////////////////////////////////////////////
 router.post('/refresh-token', async (req: Request, res: Response) => {
-    const JWT_Tokens = await UsersService.refreshToken(req.cookies.refreshToken, req.ip)
+    let title = req.header('User-Agent') ?? ''
+    title = title.substring(0, title.indexOf(' '))
+
+    const JWT_Tokens = await UsersService.refreshToken(req.cookies.refreshToken, req.ip, title)
     if (!JWT_Tokens) {
         return res.sendStatus(401)
     }

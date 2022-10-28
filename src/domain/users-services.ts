@@ -125,7 +125,7 @@ export const UsersService = {
 
 
     //////////////////////////////////
-    async loginUser(login: string, password: string, ip: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+    async loginUser(login: string, password: string, ip: string, title: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         const user = await Users.getUserByLogin(login)
         if (user) {
             const compareOK = await this._comparePassword(password, user.password)
@@ -133,7 +133,7 @@ export const UsersService = {
                 const deviceId = uuidv4() // т.е. это Сессия
                 return {
                     accessToken: await jwtService.createAuthJWT(user.id),
-                    refreshToken: await jwtService.createRefreshJWT(user.id, deviceId, ip)
+                    refreshToken: await jwtService.createRefreshJWT(user.id, deviceId, ip, title)
                 }
             }
         }
@@ -142,7 +142,7 @@ export const UsersService = {
 
 
     /////////////////////////////////////////////
-    async refreshToken(refreshToken: string, ip: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+    async refreshToken(refreshToken: string, ip: string, title: string): Promise<{ accessToken: string, refreshToken: string } | null> {
         if (!refreshToken) {
             return null
         }
@@ -151,7 +151,7 @@ export const UsersService = {
         if (result) {
             return {
                 accessToken: await jwtService.createAuthJWT(result.userId),
-                refreshToken: await jwtService.createRefreshJWT(result.userId, result.deviceId, ip),
+                refreshToken: await jwtService.createRefreshJWT(result.userId, result.deviceId, ip, title),
             }
         }
 

@@ -23,7 +23,7 @@ export const jwtService = {
 
 
     ////////////////////////////////////
-    async createRefreshJWT(userId: string, deviceId: string, ip: string
+    async createRefreshJWT(userId: string, deviceId: string, ip: string, title: string
     ):
         Promise<string> {
 
@@ -37,6 +37,7 @@ export const jwtService = {
             userId,
             deviceId,
             ip,
+            title,
             issuedAt: result.iat,
             expiresIn: result.exp,
         }
@@ -47,7 +48,7 @@ export const jwtService = {
 
 
     ////////////////////////////////////
-    async getInfoByToken(token: string): Promise<{userId:string,deviceId:string} | null> {
+    async getInfoByToken(token: string): Promise<{ userId: string, deviceId: string } | null> {
         try {
             const decoded = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
 
@@ -57,8 +58,8 @@ export const jwtService = {
             }
 
             return {
-                userId:decoded.userId,
-                deviceId:decoded.deviceId,
+                userId: decoded.userId,
+                deviceId: decoded.deviceId,
             }
 
         } catch (e) {

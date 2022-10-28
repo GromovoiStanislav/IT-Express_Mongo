@@ -7,6 +7,7 @@ export type refreshTokenDBType = {
     issuedAt: number,
     expiresIn: number,
     ip: string,
+    title: string,
 }
 
 const TokensCollection = dbDemo.collection<refreshTokenDBType>('refreshTokens')
@@ -22,24 +23,23 @@ export const refreshTokens = {
     },
 
     async deleteByDeviceId(deviceId: string): Promise<Boolean> {
-        const result = await  TokensCollection.deleteOne({deviceId})
+        const result = await TokensCollection.deleteOne({deviceId})
         return result.deletedCount === 1
     },
 
     async deleteAllOtherExcludeDeviceId(deviceId: string): Promise<Boolean> {
-        const result = await  TokensCollection.deleteMany({deviceId}) /// todo
+        const result = await TokensCollection.deleteMany({deviceId}) /// todo
         return result.deletedCount > 0
     },
 
 
-
     async addOrUpdateToken(data: refreshTokenDBType): Promise<Boolean> {
-        await TokensCollection.findOneAndUpdate({deviceId:data.deviceId},data,{upsert:true})
+        await TokensCollection.findOneAndUpdate({deviceId: data.deviceId}, data, {upsert: true})
         return true
     },
 
-    async findToken(deviceId: string,issuedAt: number): Promise<refreshTokenDBType | null> {
-        return TokensCollection.findOne({deviceId,issuedAt})
+    async findToken(deviceId: string, issuedAt: number): Promise<refreshTokenDBType | null> {
+        return TokensCollection.findOne({deviceId, issuedAt})
     },
 
 }
