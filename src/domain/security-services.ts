@@ -13,7 +13,7 @@ export const SecurityService = {
         return data.map(el => ({
             ip: el.ip,
             title: el.title,
-            lastActiveDate: new Date(el.issuedAt).toISOString(),
+            lastActiveDate: el.issuedAt,
             deviceId: el.deviceId,
         }))
     },

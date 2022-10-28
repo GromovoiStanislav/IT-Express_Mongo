@@ -1,13 +1,11 @@
 import jwt from 'jsonwebtoken'
 import {settings} from '../settigs'
 import {refreshTokenDBType, refreshTokens} from "../repositories/refreshTokens";
-import {v4 as uuidv4} from 'uuid'
-
 
 type RefreshJWT = {
     userId: string,
     deviceId: string,
-    issuedAt: number,
+    issuedAt: string,
     iat: number,
     exp: number,
 }
@@ -37,8 +35,8 @@ export const jwtService = {
             deviceId,
             ip,
             title,
-            issuedAt: issuedAt,
-            expiresIn: issuedAt+20,
+            issuedAt: new Date(issuedAt).toISOString(),
+            expiresIn: new Date(issuedAt+20).toISOString(),
         }
 
         const refreshToken = jwt.sign(
@@ -90,7 +88,7 @@ export const jwtService = {
         try {
             const decoded = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
 
-            const result = await refreshTokens.findToken(decoded.deviceId, decoded.iat)
+            const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
             if (!result) {
                 return false
             }

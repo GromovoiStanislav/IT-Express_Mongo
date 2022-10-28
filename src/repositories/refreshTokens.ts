@@ -4,8 +4,8 @@ import {dbDemo} from "./db";
 export type refreshTokenDBType = {
     deviceId: string,
     userId: string,
-    issuedAt: number,
-    expiresIn: number,
+    issuedAt: string,
+    expiresIn: string,
     ip: string,
     title: string,
 }
@@ -38,7 +38,7 @@ export const refreshTokens = {
         return true
     },
 
-    async findToken(deviceId: string, issuedAt: number): Promise<refreshTokenDBType | null> {
+    async findToken(deviceId: string, issuedAt: string): Promise<refreshTokenDBType | null> {
         return TokensCollection.findOne({deviceId, issuedAt})
     },
 
