@@ -16,13 +16,6 @@ export const SecurityService = {
             ip: el.ip,
             title: el.title,
         }))
-        // const el = data[0]
-        // return [{
-        //     deviceId: el.deviceId,
-        //     lastActiveDate: el.issuedAt,
-        //     ip: el.ip,
-        //     title: el.title,
-        // }]
     },
 
 
@@ -50,7 +43,6 @@ export const SecurityService = {
         if (dataFromToken.userId !== dataFromDeviceId.userId) {
             return 403
         }
-
 
         await refreshTokens.deleteByDeviceId(dataFromToken.deviceId)
         return 204

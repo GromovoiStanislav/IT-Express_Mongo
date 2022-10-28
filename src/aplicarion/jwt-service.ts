@@ -55,10 +55,10 @@ export const jwtService = {
         try {
             const decoded = jwt.verify(refreshToken, settings.JWT_SECRET) as RefreshJWT
 
-            const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
-            if (!result) {
-                return null
-            }
+            // const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
+            // if (!result) {
+            //     return null
+            // }
 
             return {
                 userId: decoded.userId,
