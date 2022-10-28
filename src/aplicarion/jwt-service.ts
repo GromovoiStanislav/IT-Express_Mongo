@@ -68,6 +68,18 @@ export const jwtService = {
     },
 
 
+
+    ////////////////////////////////////
+    async getUserIdByToken(token: string): Promise<string | null> {
+        try {
+            const result = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
+            return result.userId
+        } catch (e) {
+            return null
+        }
+    },
+
+
     ////////////////////////////////////
     async killSessionByToken(token: string): Promise<Boolean> {
         try {
