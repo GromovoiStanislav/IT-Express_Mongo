@@ -35,7 +35,7 @@ export const refreshTokens = {
 
 
     async addOrUpdateToken(data: refreshTokenDBType): Promise<boolean> {
-        await TokensCollection.findOneAndUpdate({deviceId: data.deviceId}, data, {upsert: true})
+        await TokensCollection.findOneAndReplace({deviceId: data.deviceId}, data, {upsert: true})
         return true
     },
 

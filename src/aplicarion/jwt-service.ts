@@ -45,6 +45,7 @@ export const jwtService = {
             issuedAt: result.iat,
             expiresIn: result.exp,
         }
+
         await refreshTokens.addOrUpdateToken(dataRefreshToken)
 
         return refreshToken
