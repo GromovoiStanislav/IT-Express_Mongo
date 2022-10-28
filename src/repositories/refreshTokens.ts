@@ -2,6 +2,7 @@ import {dbDemo} from "./db";
 
 
 export type refreshTokenDBType = {
+    _id?:string,
     deviceId: string,
     userId: string,
     issuedAt: number,
@@ -18,8 +19,8 @@ export const refreshTokens = {
         await TokensCollection.deleteMany({})
     },
 
-    async getAllByUserId(userId: string): Promise<refreshTokenDBType | null> {
-        return TokensCollection.findOne({userId})
+    async getAllByUserId(userId: string): Promise<refreshTokenDBType[]> {
+        return TokensCollection.find({userId}).toArray()
     },
 
     async deleteByDeviceId(deviceId: string): Promise<Boolean> {

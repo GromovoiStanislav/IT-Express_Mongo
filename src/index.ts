@@ -8,6 +8,7 @@ import postsRouter from './routers/postsRouter'
 import usersRouter from './routers/usersRouter'
 import commentsRouter from './routers/commentsRouter'
 import authRouter from './routers/authRouter'
+import securityRouter from './routers/securityRouter'
 
 
 
@@ -24,6 +25,7 @@ app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/comments', commentsRouter)
 app.use('/auth', authRouter)
+app.use('/security', securityRouter)
 
 
 
