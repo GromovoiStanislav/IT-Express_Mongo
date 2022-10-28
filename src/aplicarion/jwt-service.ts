@@ -29,18 +29,18 @@ export const jwtService = {
     async createRefreshJWT(userId: string, deviceId: string, ip: string, title: string
     ):
         Promise<string> {
-        const issuedAt= Date.now()
+        const issuedAt = Date.now()
         const dataRefreshToken: refreshTokenDBType = {
             userId,
             deviceId,
             ip,
             title,
             issuedAt: new Date(issuedAt).toISOString(),
-            expiresIn: new Date(issuedAt+20*1000).toISOString(),
+            expiresIn: new Date(issuedAt + 20 * 1000).toISOString(),
         }
 
         const refreshToken = jwt.sign(
-            {userId, deviceId,issuedAt},
+            {userId, deviceId, issuedAt: new Date(issuedAt).toISOString()},
             settings.JWT_SECRET,
             {expiresIn: '20s'})
 
@@ -57,7 +57,7 @@ export const jwtService = {
 
             const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
             if (!result) {
-                //return null
+                return null
             }
 
             return {
@@ -69,7 +69,6 @@ export const jwtService = {
             return null
         }
     },
-
 
 
     ////////////////////////////////////

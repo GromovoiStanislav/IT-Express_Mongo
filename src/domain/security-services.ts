@@ -11,10 +11,10 @@ export const SecurityService = {
         }
         const data = await refreshTokens.getAllByUserId(dataFromToken.userId)
         return data.map(el => ({
+            deviceId: el.deviceId,
+            lastActiveDate: el.issuedAt,
             ip: el.ip,
             title: el.title,
-            lastActiveDate: el.issuedAt,
-            deviceId: el.deviceId,
         }))
     },
 
