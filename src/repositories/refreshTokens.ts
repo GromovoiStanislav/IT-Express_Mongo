@@ -28,13 +28,13 @@ export const refreshTokens = {
         return result.deletedCount === 1
     },
 
-    async deleteAllOtherExcludeDeviceId(deviceId: string): Promise<Boolean> {
+    async deleteAllOtherExcludeDeviceId(deviceId: string): Promise<boolean> {
         const result = await TokensCollection.deleteMany({deviceId}) /// todo
         return result.deletedCount > 0
     },
 
 
-    async addOrUpdateToken(data: refreshTokenDBType): Promise<Boolean> {
+    async addOrUpdateToken(data: refreshTokenDBType): Promise<boolean> {
         await TokensCollection.findOneAndUpdate({deviceId: data.deviceId}, data, {upsert: true})
         return true
     },
@@ -43,4 +43,7 @@ export const refreshTokens = {
         return TokensCollection.findOne({deviceId, issuedAt})
     },
 
+    async findByDeviceId(deviceId: string): Promise<refreshTokenDBType | null> {
+        return TokensCollection.findOne({deviceId})
+    },
 }

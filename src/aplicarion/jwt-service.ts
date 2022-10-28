@@ -11,6 +11,10 @@ type RefreshJWT = {
     exp: number,
 }
 
+type AuthJWT = {
+    userId: string,
+}
+
 export const jwtService = {
 
     ////////////////////////////////////
@@ -72,7 +76,7 @@ export const jwtService = {
     ////////////////////////////////////
     async getUserIdByToken(token: string): Promise<string | null> {
         try {
-            const result = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
+            const result = jwt.verify(token, settings.JWT_SECRET) as AuthJWT
             return result.userId
         } catch (e) {
             return null

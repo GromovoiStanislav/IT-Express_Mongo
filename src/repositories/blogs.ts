@@ -49,7 +49,7 @@ export const Blogs = {
         return await BlogsCollection.findOne({id},{projection: {_id: 0}})
     },
 
-    async deleteByID(id: string): Promise<Boolean> {
+    async deleteByID(id: string): Promise<boolean> {
         const result = await BlogsCollection.deleteOne({id})
         return result.deletedCount === 1
     },
@@ -59,7 +59,7 @@ export const Blogs = {
         return data
     },
 
-    async updateBlog(id: string, data: BlogType): Promise<Boolean> {
+    async updateBlog(id: string, data: BlogType): Promise<boolean> {
         const result = await BlogsCollection.updateOne({id}, {$set: {...data}})
         return result.matchedCount === 1
     },
