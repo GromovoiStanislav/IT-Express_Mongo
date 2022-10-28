@@ -5,6 +5,8 @@ export const limiter = (numRequests: number, resetIn: number) => rateLimit({
         max: numRequests,
         legacyHeaders: false,
         standardHeaders: false,
-        //store: new MemoryStore(),
+        store: new MemoryStore(),
     }
 )
+
+
