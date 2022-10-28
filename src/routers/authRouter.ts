@@ -8,7 +8,7 @@ import {Users} from "../repositories/users";
 import {limiter} from "../middlewares/limiter";
 
 const router = Router();
-const authLimiter = limiter(5, 1000 * 60 * 10)
+const authLimiter = limiter(5, 1000 * 10)//10sec
 
 
 ////////////////////////////// registration //////////////////////////////////////////////
