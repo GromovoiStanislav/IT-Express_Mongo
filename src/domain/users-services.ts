@@ -14,7 +14,7 @@ export const UsersService = {
     /////////////////////////////////
     async clearAll(): Promise<void> {
         await Users.clearAll()
-        //await refreshTokens.clearAll()
+        await refreshTokens.clearAll()
     },
 
 
