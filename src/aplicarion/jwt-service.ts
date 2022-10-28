@@ -36,14 +36,13 @@ export const jwtService = {
             settings.JWT_SECRET,
             {expiresIn: '20s'})
 
-        const result = jwt.verify(refreshToken, settings.JWT_SECRET) as RefreshJWT
         const dataRefreshToken: refreshTokenDBType = {
             userId,
             deviceId,
             ip,
             title,
-            issuedAt: result.iat,
-            expiresIn: result.exp,
+            issuedAt: Date.now(),
+            expiresIn: Date.now()+20,
         }
 
         await refreshTokens.addOrUpdateToken(dataRefreshToken)
