@@ -8,7 +8,7 @@ import {Users} from "../repositories/users";
 import {limiter} from "../middlewares/limiter";
 
 const router = Router();
-const authLimiter = limiter(5,1000*60*10)
+const authLimiter = limiter(5, 1000 * 60 * 10)
 
 
 ////////////////////////////// registration //////////////////////////////////////////////
@@ -31,7 +31,7 @@ const validatorRegistration = [
     body('password').trim().notEmpty().isString().isLength({min: 6, max: 20}),
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailExistAlready),
 ]
-router.post('/registration',authLimiter, validatorRegistration, inputValidation, async (req: Request, res: Response) => {
+router.post('/registration', validatorRegistration, inputValidation, authLimiter, async (req: Request, res: Response) => {
 
     const dataUser: UserInputModel = {
         login: req.body.login,
@@ -57,7 +57,7 @@ router.post('/registration',authLimiter, validatorRegistration, inputValidation,
 const validatorConfirmation = [
     body('code').trim().notEmpty().isString(),
 ]
-router.post('/registration-confirmation',authLimiter, validatorConfirmation, inputValidation, async (req: Request, res: Response) => {
+router.post('/registration-confirmation', validatorConfirmation, inputValidation, authLimiter, async (req: Request, res: Response) => {
     const result = await UsersService.confirmEmail(req.body.code)
     if (result) {
         return res.sendStatus(204)
@@ -88,7 +88,7 @@ const isEmailAlreadyConfirmed: CustomValidator = async (value) => {
 const validatorEmailResending = [
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailAlreadyConfirmed),
 ]
-router.post('/registration-email-resending',authLimiter, validatorEmailResending, inputValidation, async (req: Request, res: Response) => {
+router.post('/registration-email-resending', validatorEmailResending, inputValidation, authLimiter, async (req: Request, res: Response) => {
     await UsersService.resendConfirmationCode(req.body.email)
     res.sendStatus(204)
 })
@@ -99,7 +99,7 @@ const validatorLogin = [
     body('login').trim().notEmpty(),
     body('password').trim().notEmpty(),
 ]
-router.post('/login', authLimiter, validatorLogin, inputValidation, async (req: Request, res: Response) => {
+router.post('/login', validatorLogin, inputValidation, authLimiter, async (req: Request, res: Response) => {
     let title = req.header('user-agent') ?? ''
     title = title.split(' ')[0]
 
