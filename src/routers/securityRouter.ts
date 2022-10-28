@@ -13,7 +13,7 @@ router.get('/devices', async (req: Request, res: Response) => {
     if (!result) {
         return res.sendStatus(401)
     }
-    res.status(200).send({result})
+    res.status(200).send(result)
 })
 
 
