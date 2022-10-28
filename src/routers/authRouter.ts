@@ -5,7 +5,7 @@ import {UserInputModel} from "../types/users";
 import {UsersService} from "../domain/users-services";
 import {authJWT} from "../middlewares/authorization";
 import {Users} from "../repositories/users";
-import {limiter, MyLimiter} from "../middlewares/limiter";
+import { MyLimiter} from "../middlewares/limiter";
 
 const router = Router();
 const myLimiter = new MyLimiter(5, 10)
