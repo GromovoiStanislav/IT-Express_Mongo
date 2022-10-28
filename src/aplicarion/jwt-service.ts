@@ -7,6 +7,7 @@ import {v4 as uuidv4} from 'uuid'
 type RefreshJWT = {
     userId: string,
     deviceId: string,
+    issuedAt: number,
     iat: number,
     exp: number,
 }
@@ -30,20 +31,20 @@ export const jwtService = {
     async createRefreshJWT(userId: string, deviceId: string, ip: string, title: string
     ):
         Promise<string> {
-
-        const refreshToken = jwt.sign(
-            {userId, deviceId,},
-            settings.JWT_SECRET,
-            {expiresIn: '20s'})
-
+        const issuedAt= Date.now()
         const dataRefreshToken: refreshTokenDBType = {
             userId,
             deviceId,
             ip,
             title,
-            issuedAt: Date.now(),
-            expiresIn: Date.now()+20,
+            issuedAt: issuedAt,
+            expiresIn: issuedAt+20,
         }
+
+        const refreshToken = jwt.sign(
+            {userId, deviceId,issuedAt},
+            settings.JWT_SECRET,
+            {expiresIn: '20s'})
 
         await refreshTokens.addOrUpdateToken(dataRefreshToken)
 
@@ -56,7 +57,7 @@ export const jwtService = {
         try {
             const decoded = jwt.verify(token, settings.JWT_SECRET) as RefreshJWT
 
-            const result = await refreshTokens.findToken(decoded.deviceId, decoded.iat)
+            const result = await refreshTokens.findToken(decoded.deviceId, decoded.issuedAt)
             if (!result) {
                 return null
             }

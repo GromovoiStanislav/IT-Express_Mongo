@@ -2,7 +2,6 @@ import {dbDemo} from "./db";
 
 
 export type refreshTokenDBType = {
-    _id?:string,
     deviceId: string,
     userId: string,
     issuedAt: number,
