@@ -5,15 +5,11 @@ import {UserInputModel} from "../types/users";
 import {UsersService} from "../domain/users-services";
 import {authJWT} from "../middlewares/authorization";
 import {Users} from "../repositories/users";
-import {MyLimiter,MyLimiter2} from "../middlewares/limiter";
-// import {limiter} from "../middlewares/limiter";
-// const authLimiter = limiter(5, 1000 * 10)//10sec
+import {MyLimiter} from "../middlewares/limiter";
 
-
-
+//////////////////////////////////////////
 const router = Router();
-//const myLimiter = new MyLimiter(5,10)
-const limiter = MyLimiter2(5,10)
+const limiter = MyLimiter(5,10)
 
 ////////////////////////////// registration //////////////////////////////////////////////
 const isLoginExistAlready: CustomValidator = async (value) => {
