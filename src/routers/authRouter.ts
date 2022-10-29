@@ -5,7 +5,11 @@ import {UserInputModel} from "../types/users";
 import {UsersService} from "../domain/users-services";
 import {authJWT} from "../middlewares/authorization";
 import {Users} from "../repositories/users";
-import { MyLimiter} from "../middlewares/limiter";
+import {MyLimiter} from "../middlewares/limiter";
+// import {limiter} from "../middlewares/limiter";
+// const authLimiter = limiter(5, 1000 * 10)//10sec
+
+
 
 const router = Router();
 const myLimiter = new MyLimiter(5, 10)
@@ -33,7 +37,7 @@ const validatorRegistration = [
 ]
 router.post('/registration', validatorRegistration, inputValidation, async (req: Request, res: Response) => {
 
-    if (myLimiter.stop(req.ip, '/registration')) {
+    if (myLimiter.rateLimit(req.ip, '/registration')) {
         return res.sendStatus(429)
     }
 
@@ -63,7 +67,7 @@ const validatorConfirmation = [
 ]
 router.post('/registration-confirmation', validatorConfirmation, inputValidation, async (req: Request, res: Response) => {
 
-    if (myLimiter.stop(req.ip, '/registration-confirmation')) {
+    if (myLimiter.rateLimit(req.ip, '/registration-confirmation')) {
         return res.sendStatus(429)
     }
 
@@ -99,7 +103,7 @@ const validatorEmailResending = [
 ]
 router.post('/registration-email-resending', validatorEmailResending, inputValidation, async (req: Request, res: Response) => {
 
-    if (myLimiter.stop(req.ip, '/registration-email-resending')) {
+    if (myLimiter.rateLimit(req.ip, '/registration-email-resending')) {
         return res.sendStatus(429)
     }
 
@@ -115,7 +119,7 @@ const validatorLogin = [
 ]
 router.post('/login', validatorLogin, inputValidation, async (req: Request, res: Response) => {
 
-    if (myLimiter.stop(req.ip, '/login')) {
+    if (myLimiter.rateLimit(req.ip, '/login')) {
         return res.sendStatus(429)
     }
 
