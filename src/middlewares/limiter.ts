@@ -1,8 +1,11 @@
 import {Request, Response, NextFunction} from 'express'
 
 
-type ElType = { ip: string, url: string, date: number }
-
+type ElType = {
+    ip: string
+    url: string
+    date: number
+}
 
 let store: ElType[] = []
 
@@ -15,11 +18,11 @@ export const MyLimiter = (numRequests: number, resetIn: number) => (req: Request
         return (el.date >= dateN)
     })
     //Добавляем текущий вызов
-    store.push({ip: req.ip, url: req.url, date})
+    store.push({ip: req.ip, url: req.originalUrl , date})
 
     //Считаем
     const tempArr = store.filter(el => {
-        return (el.url === req.url && el.ip === req.ip && el.date >= dateN)
+        return (el.url === req.originalUrl && el.ip === req.ip && el.date >= dateN)
     })
     //Решаем
     if (tempArr.length > numRequests) {

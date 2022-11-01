@@ -100,7 +100,7 @@ router.post('/registration-email-resending', validatorEmailResending, inputValid
 const validatorEmail = [
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
 ]
-router.post('/password-recovery', validatorEmail, inputValidation, limiter, async (req: Request, res: Response) => {
+router.post('/password-recovery',  limiter, validatorEmail, inputValidation, async (req: Request, res: Response) => {
     await UsersService.passwordRecovery(req.body.email)
     res.sendStatus(204)
 })
@@ -121,7 +121,7 @@ const validatorNewPassword = [
     body('newPassword').trim().notEmpty().isString().isLength({min: 6, max: 20}),
     body('recoveryCode').trim().notEmpty().isString().custom(isRecoveryCodeAlreadyConfirmed),
 ]
-router.post('/new-password', validatorNewPassword, inputValidation, limiter, async (req: Request, res: Response) => {
+router.post('/new-password', limiter, validatorNewPassword, inputValidation,  async (req: Request, res: Response) => {
     await UsersService.newPassword(req.body.recoveryCode, req.body.newPassword)
     return res.sendStatus(204)
 })
