@@ -4,17 +4,19 @@ import {UsersViewModel} from "../types/users";
 
 
 export type UserDBType = {
-    id: string,
-    login: string,
-    password: string,
+    id: string
+    login: string
+    password: string
     email: string
-    createdAt: string,
+    createdAt: string
     emailConfirmation?:{
         confirmationCode: string,
         isConfirmed:boolean,
     }
-    //recoveryCode?:string,
-
+    recoveryPassword?:{
+        recoveryCode: string,
+        isConfirmed:boolean,
+    }
 }
 
 const UsersCollection = dbDemo.collection<UserDBType>('users')
@@ -90,29 +92,31 @@ export const Users = {
         return result.modifiedCount === 1
     },
 
-
     async updateConfirmCode(id: string,confirmationCode:string): Promise<Boolean> {
         const result = await UsersCollection.updateOne({id},{$set: {'emailConfirmation.confirmationCode': confirmationCode}})
         return result.modifiedCount === 1
     },
 
-    // async updateRecoveryCode(id: string,recoveryCode:string): Promise<Boolean> {
-    //     const result = await UsersCollection.updateOne({id},{$set: {'recoveryCode': recoveryCode}})
-    //     return result.modifiedCount === 1
-    // },
-
-
-    async updatePassword(id: string,password:string): Promise<Boolean> {
-        const result = await UsersCollection.updateOne({id},{$set: {'password': password}})
+    async updateRecoveryCodeByEmail(email: string,recoveryCode:string): Promise<Boolean> {
+        const result = await UsersCollection.updateOne({email},{$set: {'recoveryPassword.recoveryCode': recoveryCode}})
         return result.modifiedCount === 1
     },
+
+    async confirmRecoveryPassword(recoveryCode: string,password:string): Promise<Boolean> {
+        const result = await UsersCollection.updateOne({'recoveryPassword.recoveryCode':recoveryCode},{$set: {'recoveryPassword.isConfirmed': true,'password': password}})
+        return result.modifiedCount === 1
+    },
+
 
     async getUserById(id:string):Promise<UserDBType| null>{
         return UsersCollection
             .findOne({id})
     },
 
-
+    async getUserByRecoveryCode(recoveryCode:string):Promise<UserDBType| null>{
+        return UsersCollection
+            .findOne({'recoveryPassword.recoveryCode': recoveryCode})
+    },
 
     async deleteByID(id: string): Promise<Boolean> {
         const result = await UsersCollection.deleteOne({id})

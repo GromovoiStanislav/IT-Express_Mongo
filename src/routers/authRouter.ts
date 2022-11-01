@@ -107,16 +107,23 @@ router.post('/password-recovery', validatorEmail, inputValidation, limiter, asyn
 
 
 ////////////////////////////// new-password //////////////////////////////////////////////
+const isRecoveryCodeAlreadyConfirmed: CustomValidator = async (value) => {
+    const user = await Users.getUserByRecoveryCode(value)
+    if (!user) {
+        throw new Error('recoveryCode is incorrect')
+    }
+    if (user.recoveryPassword?.isConfirmed) {
+        throw new Error('recoveryCode is already confirmed')
+    }
+    return true;
+}
 const validatorNewPassword = [
     body('newPassword').trim().notEmpty().isString().isLength({min: 6, max: 20}),
-    body('recoveryCode').trim().notEmpty().isString(),
+    body('recoveryCode').trim().notEmpty().isString().custom(isRecoveryCodeAlreadyConfirmed),
 ]
 router.post('/new-password', validatorNewPassword, inputValidation, limiter, async (req: Request, res: Response) => {
-    const result = await UsersService.newPassword(req.body.recoveryCode, req.body.newPassword)
-    if(result){
-        return res.sendStatus(204)
-    }
-    res.sendStatus(400)
+    await UsersService.newPassword(req.body.recoveryCode, req.body.newPassword)
+    return res.sendStatus(204)
 })
 
 

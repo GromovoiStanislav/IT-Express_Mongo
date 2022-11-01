@@ -73,25 +73,20 @@ export const UsersService = {
 
     ///////////////////////////////////////////
     async passwordRecovery(email: string): Promise<void> {
-        const user = await Users.getUserByEmail(email)
-        const userId = user ? user.id : uuidv4()
 
         const subject = 'Password recovery'
-        const recoveryCode = await jwtService.createJWT(userId)
+        const recoveryCode = uuidv4()
         const message = `<a href='${settings.URL}/auth/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a>`
 
         await emailAdapter.sendEmail(email, subject, message);
+        await Users.updateRecoveryCodeByEmail(email,recoveryCode)
     },
 
 
     ///////////////////////////////////////////
     async newPassword(recoveryCode: string, newPassword: string): Promise<Boolean> {
-        const userId = await jwtService.getUserIdByToken(recoveryCode)
-        if (!userId) {
-            return false
-        }
         const hash = await this._generateHash(newPassword)
-        await Users.updatePassword(userId,hash)
+        await Users.confirmRecoveryPassword(recoveryCode,hash)
         return true
     },
 
