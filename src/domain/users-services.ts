@@ -1,9 +1,9 @@
 import {UserDBType, Users} from "../repositories/users";
-import {refreshTokenDBType, refreshTokens} from "../repositories/refreshTokens";
+import {refreshTokens} from "../repositories/refreshTokens";
 import {UserInputModel, UsersViewModel, UserViewModel} from "../types/users";
 import bcryptjs from 'bcryptjs'
 import {paginationParams} from '../middlewares/input-validation'
-import {jwtService} from "../aplicarion/jwt-service";
+import {jwtService} from "../aplication/jwt-service";
 import {emailAdapter} from "../adapters/email-adapter";
 import {settings} from '../settigs'
 import {v4 as uuidv4} from 'uuid'
@@ -71,6 +71,30 @@ export const UsersService = {
         return true
     },
 
+    ///////////////////////////////////////////
+    async passwordRecovery(email: string): Promise<void> {
+        const user = await Users.getUserByEmail(email)
+        const userId = user ? user.id : uuidv4()
+
+        const subject = 'Password recovery'
+        const recoveryCode = await jwtService.createJWT(userId)
+        const message = `<a href='${settings.URL}/auth/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a>`
+
+        await emailAdapter.sendEmail(email, subject, message);
+    },
+
+
+    ///////////////////////////////////////////
+    async newPassword(recoveryCode: string, newPassword: string): Promise<Boolean> {
+        const userId = await jwtService.getUserIdByToken(recoveryCode)
+        if (!userId) {
+            return false
+        }
+        const hash = await this._generateHash(newPassword)
+        await Users.updatePassword(userId,hash)
+        return true
+    },
+
 
     ////////////////////////////////////////
     async resendConfirmationCode(email: string): Promise<Boolean> {
@@ -114,13 +138,6 @@ export const UsersService = {
             id: newUser.id,
             createdAt: newUser.createdAt,
         }
-    },
-
-
-    ////////////////////////////////
-    async findUserById(userID: string): Promise<UserDBType | null> {
-        return await Users.getUserById(userID)
-
     },
 
 
@@ -185,6 +202,13 @@ export const UsersService = {
 
 export const UsersQuery = {
 
+    ////////////////////////////////
+    async findUserById(userID: string): Promise<UserDBType | null> {
+        return await Users.getUserById(userID)
+
+    },
+
+    ////////////////////////////////
     async getAll(searchLoginTerm: string, searchEmailTerm: string, paginationParams: paginationParams): Promise<UsersViewModel> {
 
         const result = await Users.getAll(searchLoginTerm, searchEmailTerm, paginationParams)

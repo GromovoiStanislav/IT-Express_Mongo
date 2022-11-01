@@ -9,7 +9,7 @@ import {MyLimiter} from "../middlewares/limiter";
 
 //////////////////////////////////////////
 const router = Router();
-const limiter = MyLimiter(5,10)
+const limiter = MyLimiter(5, 10)
 
 ////////////////////////////// registration //////////////////////////////////////////////
 const isLoginExistAlready: CustomValidator = async (value) => {
@@ -31,11 +31,7 @@ const validatorRegistration = [
     body('password').trim().notEmpty().isString().isLength({min: 6, max: 20}),
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailExistAlready),
 ]
-router.post('/registration', validatorRegistration, inputValidation,limiter, async (req: Request, res: Response) => {
-
-    // if (myLimiter.rateLimit(req.ip, '/registration')) {
-    //     return res.sendStatus(429)
-    // }
+router.post('/registration', validatorRegistration, inputValidation, limiter, async (req: Request, res: Response) => {
 
     const dataUser: UserInputModel = {
         login: req.body.login,
@@ -61,11 +57,7 @@ router.post('/registration', validatorRegistration, inputValidation,limiter, asy
 const validatorConfirmation = [
     body('code').trim().notEmpty().isString(),
 ]
-router.post('/registration-confirmation', validatorConfirmation, inputValidation,limiter, async (req: Request, res: Response) => {
-
-    // if (myLimiter.rateLimit(req.ip, '/registration-confirmation')) {
-    //     return res.sendStatus(429)
-    // }
+router.post('/registration-confirmation', validatorConfirmation, inputValidation, limiter, async (req: Request, res: Response) => {
 
     const result = await UsersService.confirmEmail(req.body.code)
     if (result) {
@@ -97,14 +89,34 @@ const isEmailAlreadyConfirmed: CustomValidator = async (value) => {
 const validatorEmailResending = [
     body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(isEmailAlreadyConfirmed),
 ]
-router.post('/registration-email-resending', validatorEmailResending, inputValidation,limiter, async (req: Request, res: Response) => {
-
-    // if (myLimiter.rateLimit(req.ip, '/registration-email-resending')) {
-    //     return res.sendStatus(429)
-    // }
+router.post('/registration-email-resending', validatorEmailResending, inputValidation, limiter, async (req: Request, res: Response) => {
 
     await UsersService.resendConfirmationCode(req.body.email)
     res.sendStatus(204)
+})
+
+
+////////////////////////////// password-recovery //////////////////////////////////////////////
+const validatorEmail = [
+    body('email').trim().notEmpty().isString().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+]
+router.post('/password-recovery', validatorEmail, inputValidation, limiter, async (req: Request, res: Response) => {
+    await UsersService.passwordRecovery(req.body.email)
+    res.sendStatus(204)
+})
+
+
+////////////////////////////// new-password //////////////////////////////////////////////
+const validatorNewPassword = [
+    body('newPassword').trim().notEmpty().isString().isLength({min: 6, max: 20}),
+    body('recoveryCode').trim().notEmpty().isString(),
+]
+router.post('/new-password', validatorNewPassword, inputValidation, limiter, async (req: Request, res: Response) => {
+    const result = await UsersService.newPassword(req.body.recoveryCode, req.body.newPassword)
+    if(result){
+        return res.sendStatus(204)
+    }
+    res.sendStatus(400)
 })
 
 
@@ -113,11 +125,7 @@ const validatorLogin = [
     body('login').trim().notEmpty(),
     body('password').trim().notEmpty(),
 ]
-router.post('/login', validatorLogin, inputValidation,limiter, async (req: Request, res: Response) => {
-
-    // if (myLimiter.rateLimit(req.ip, '/login')) {
-    //     return res.sendStatus(429)
-    // }
+router.post('/login', validatorLogin, inputValidation, limiter, async (req: Request, res: Response) => {
 
     let title = req.header('user-agent') ?? ''
     title = title.split(' ')[0]

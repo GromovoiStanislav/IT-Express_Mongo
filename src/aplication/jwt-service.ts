@@ -17,6 +17,14 @@ type AuthJWT = {
 export const jwtService = {
 
     ////////////////////////////////////
+    async createJWT(userId: string): Promise<string> {
+        return jwt.sign(
+            {userId},
+            settings.JWT_SECRET)
+    },
+
+
+    ////////////////////////////////////
     async createAuthJWT(userId: string): Promise<string> {
         return jwt.sign(
             {userId},

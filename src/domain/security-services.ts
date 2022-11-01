@@ -1,4 +1,4 @@
-import {jwtService} from "../aplicarion/jwt-service";
+import {jwtService} from "../aplication/jwt-service";
 import {refreshTokens} from "../repositories/refreshTokens";
 
 export const SecurityService = {

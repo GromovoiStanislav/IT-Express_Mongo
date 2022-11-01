@@ -13,6 +13,8 @@ export type UserDBType = {
         confirmationCode: string,
         isConfirmed:boolean,
     }
+    //recoveryCode?:string,
+
 }
 
 const UsersCollection = dbDemo.collection<UserDBType>('users')
@@ -91,6 +93,17 @@ export const Users = {
 
     async updateConfirmCode(id: string,confirmationCode:string): Promise<Boolean> {
         const result = await UsersCollection.updateOne({id},{$set: {'emailConfirmation.confirmationCode': confirmationCode}})
+        return result.modifiedCount === 1
+    },
+
+    // async updateRecoveryCode(id: string,recoveryCode:string): Promise<Boolean> {
+    //     const result = await UsersCollection.updateOne({id},{$set: {'recoveryCode': recoveryCode}})
+    //     return result.modifiedCount === 1
+    // },
+
+
+    async updatePassword(id: string,password:string): Promise<Boolean> {
+        const result = await UsersCollection.updateOne({id},{$set: {'password': password}})
         return result.modifiedCount === 1
     },
 
