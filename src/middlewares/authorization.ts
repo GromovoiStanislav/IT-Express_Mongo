@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express'
 import {jwtService} from '../aplication/jwt-service'
 import {UsersQuery} from '../domain/users-services'
 
-
+///////////////////////////////////////////////////////////////
 export const auth = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')
     if (!token) {
@@ -14,6 +14,8 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     next()
 }
 
+
+///////////////////////////////////////////////////////////////
 export const authJWT = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!req.header('Authorization')) {
@@ -31,11 +33,13 @@ export const authJWT = async (req: Request, res: Response, next: NextFunction) =
     res.sendStatus(401)
 }
 
+
+///////////////////////////////////////////////////////////////
 export const userIdFromJWT = async (req: Request, res: Response, next: NextFunction) => {
 
     if (req.header('Authorization')) {
         const token = req.header('Authorization')?.split(' ')[1] as string
-        req.userId = await jwtService.getUserIdByToken(token) || void 0
+        req.userId = await jwtService.getUserIdByToken(token) || undefined
     }
 
     next()

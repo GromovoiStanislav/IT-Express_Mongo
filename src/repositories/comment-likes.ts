@@ -5,7 +5,7 @@ import {likesInfoViewModel} from "../types/comments";
 export type CommentLikesDBType = {
     _id?: string,
     commentId: string,
-    like: string,
+    likeStatus: string,
     userId: string,
     userLogin: string,
     addedAt: string,
@@ -56,7 +56,7 @@ export const CommentLikes = {
         if (userId) {
             const doc = await CommentLikesCollection.findOne({commentId, userId})
             if (doc) {
-                myStatus = doc.like
+                myStatus = doc.likeStatus
             }
         }
         return {likesCount, dislikesCount, myStatus}
@@ -65,9 +65,8 @@ export const CommentLikes = {
 
     ///////////////////////////////////////////////////////
     async updateLikeByID(commentId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
-
-        const result = await CommentLikesCollection.updateOne({commentId, userId}, {$set: {like: likeStatus}})
-        return result.matchedCount === 1
+        const result = await CommentLikesCollection.updateOne({commentId, userId}, {$set: {likeStatus,userId,userLogin}},{upsert:true})
+        return result.modifiedCount === 1 && result.upsertedCount === 1
     },
 
 
