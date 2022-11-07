@@ -65,8 +65,9 @@ export const CommentLikes = {
 
     ///////////////////////////////////////////////////////
     async updateLikeByID(commentId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
-        const result = await CommentLikesCollection.updateOne({commentId, userId}, {$set: {likeStatus,userId,userLogin}},{upsert:true})
-        return result.modifiedCount === 1 && result.upsertedCount === 1
+        await CommentLikesCollection.updateOne({commentId, userId}, {$set: {likeStatus,userId,userLogin}},{upsert:true})
+        //return result.modifiedCount === 1 && result.upsertedCount === 1
+        return true
     },
 
 
