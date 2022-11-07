@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express'
 
-import {authJWT, userFromJWT} from "../middlewares/authorization";
+import {authJWT, userIdFromJWT} from "../middlewares/authorization";
 import {body} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
 import {CommentsService, CommentsQuery} from "../domain/comments-services";
@@ -16,8 +16,8 @@ export const clearAllComments = async () => {
 
 
 ////////////////////////////////////////////////////////
-router.get('/:commentId', userFromJWT, async (req: Request, res: Response) => {
-    const result = await CommentsQuery.findByID(req.params.commentId, req!.user!.id)
+router.get('/:commentId', userIdFromJWT, async (req: Request, res: Response) => {
+    const result = await CommentsQuery.findByID(req.params.commentId, req!.userId)
     if (result) {
         res.status(200).send(result)
     } else {

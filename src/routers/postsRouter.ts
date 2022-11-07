@@ -1,7 +1,7 @@
 import {Router, Request, Response} from 'express'
 import {PostsService, PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
-import {auth, authJWT, userFromJWT} from "../middlewares/authorization";
+import {auth, authJWT, userIdFromJWT} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
 import {CommentsQuery, CommentsService} from "../domain/comments-services";
@@ -91,10 +91,12 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
 
 
 /////////////////////////////////////////////////
-router.get('/:postId/comments', paginationQuerySanitizer, userFromJWT, async (req: Request, res: Response) => {
+router.get('/:postId/comments', paginationQuerySanitizer, userIdFromJWT, async (req: Request, res: Response) => {
 
     const isFind = await PostsQuery.findByID(req.params.postId)
-    if(!isFind){return  res.sendStatus(404)}
+    if (!isFind) {
+        return res.sendStatus(404)
+    }
 
     const paginationParams: paginationParams = {
         pageNumber: Number(req.query.pageNumber),
@@ -103,7 +105,7 @@ router.get('/:postId/comments', paginationQuerySanitizer, userFromJWT, async (re
         sortDirection: req.query.sortDirection as string,
     }
 
-    const item = await CommentsQuery.findAllByPostId(req.params.postId,paginationParams,req!.user!.id)
+    const item = await CommentsQuery.findAllByPostId(req.params.postId, paginationParams, req!.userId)
     if (item) {
         res.send(item)
     } else {
@@ -116,13 +118,15 @@ router.get('/:postId/comments', paginationQuerySanitizer, userFromJWT, async (re
 const CommentsValidator = [
     body('content').trim().notEmpty().isString().isLength({min: 20, max: 300}),
 ]
-router.post('/:postId/comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
+router.post('/:postId/comments', authJWT, CommentsValidator, inputValidation, async (req: Request, res: Response) => {
 
     const isFind = await PostsQuery.findByID(req.params.postId)
-    if(!isFind){return res.sendStatus(404)}
+    if (!isFind) {
+        return res.sendStatus(404)
+    }
 
-    const data:CommentInputModel = {content: req.body.content.trim()}
-    const result = await CommentsService.createByPostId(req.params.postId, req!.user!.id,req!.user!.login, data)
+    const data: CommentInputModel = {content: req.body.content.trim()}
+    const result = await CommentsService.createByPostId(req.params.postId, req!.user!.id, req!.user!.login, data)
     res.status(201).send(result)
 
 })

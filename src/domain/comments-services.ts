@@ -128,7 +128,7 @@ export const CommentsQuery = {
     },
 
     ////////////////////////////////////////////////////
-    async findAllByPostId(postId: string, paginationParams: paginationParams, userId: string): Promise<CommentsViewModel | null> {
+    async findAllByPostId(postId: string, paginationParams: paginationParams, userId?: string): Promise<CommentsViewModel | null> {
 
         const result = await Comments.findAllByPostId(postId, paginationParams) as CommentsViewModel
         result.items = await Promise.all( result.items.map(async el => ({
