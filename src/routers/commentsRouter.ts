@@ -49,7 +49,7 @@ const CommentsLikeStatusValidator = [
     body('likeStatus').trim().notEmpty().isString().toLowerCase().isIn(['none', 'like', 'dislike']),
 ]
 router.put('/:commentId/like-status', authJWT, CommentsLikeStatusValidator, inputValidation, async (req: Request, res: Response) => {
-    const likeStatus = req.body.content.trim()
+    const likeStatus = req.body.likeStatus.trim()
     const result = await CommentsService.updateLikeByID(req.params.commentId, {
         userId: req!.user!.id,
         userLogin: req!.user!.login
