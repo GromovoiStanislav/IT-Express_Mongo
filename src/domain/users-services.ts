@@ -7,6 +7,7 @@ import {jwtService} from "../aplication/jwt-service";
 import {emailAdapter} from "../adapters/email-adapter";
 import {settings} from '../settigs'
 import {v4 as uuidv4} from 'uuid'
+import {CommentLikes} from "../repositories/comment-likes";
 
 
 export const UsersService = {
@@ -20,7 +21,9 @@ export const UsersService = {
 
     //////////////////////////////////////////
     async deleteByID(id: string): Promise<Boolean> {
-        return await Users.deleteByID(id)
+        const result = await Users.deleteByID(id)
+        await CommentLikes.deleteByUserID(id)
+        return result
     },
 
 

@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from 'express'
 import {jwtService} from '../aplication/jwt-service'
-import {UsersQuery, UsersService} from '../domain/users-services'
+import {UsersQuery} from '../domain/users-services'
 
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
@@ -29,4 +29,17 @@ export const authJWT = async (req: Request, res: Response, next: NextFunction) =
     }
 
     res.sendStatus(401)
+}
+
+export const userFromJWT = async (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.header('Authorization')) {
+        const token = req.header('Authorization')?.split(' ')[1] as string
+        const userId = await jwtService.getUserIdByToken(token)
+        if(userId){
+            req.user = await UsersQuery.findUserById(userId)
+        }
+    }
+
+    next()
 }

@@ -1,5 +1,5 @@
 import {dbDemo} from "./db";
-import {CommentInputModel, CommentsViewModel} from "../types/comments";
+import {CommentInputModel, CommentsRawViewModel} from "../types/comments";
 import {paginationParams} from "../middlewares/input-validation";
 
 
@@ -44,8 +44,7 @@ export const Comments = {
         pageSize,
         sortBy,
         sortDirection
-    }: paginationParams): Promise<CommentsViewModel> {
-
+    }: paginationParams ): Promise<CommentsRawViewModel> {
 
         const items = await CommentsCollection
             .find({postId}, {projection: {_id:0}})

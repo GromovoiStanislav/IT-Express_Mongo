@@ -1,22 +1,23 @@
 import {Router, Request, Response} from 'express'
 
-import {authJWT} from "../middlewares/authorization";
-import {body, query} from 'express-validator';
+import {authJWT, userFromJWT} from "../middlewares/authorization";
+import {body} from 'express-validator';
 import {inputValidation} from '../middlewares/input-validation'
 import {CommentsService, CommentsQuery} from "../domain/comments-services";
 import {CommentInputModel} from "../types/comments";
-import {PostsQuery} from "../domain/posts-services";
+
 
 const router = Router();
 
-
+///////////////////////////////////////////////////////
 export const clearAllComments = async () => {
     await CommentsService.clearAll()
 }
 
 
-router.get('/:id', async (req: Request, res: Response) => {
-    const result = await CommentsQuery.findByID(req.params.id)
+////////////////////////////////////////////////////////
+router.get('/:commentId', userFromJWT, async (req: Request, res: Response) => {
+    const result = await CommentsQuery.findByID(req.params.commentId, req!.user!.id)
     if (result) {
         res.status(200).send(result)
     } else {
@@ -24,19 +25,35 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-router.delete('/:id', authJWT, async (req: Request, res: Response) => {
-    const result = await CommentsService.deleteByID(req.params.id, req!.user!.id)
+
+////////////////////////////////////////////////////////
+router.delete('/:commentId', authJWT, async (req: Request, res: Response) => {
+    const result = await CommentsService.deleteByID(req.params.commentId, req!.user!.id)
     res.sendStatus(result)
 })
 
 
+///////////////////////////////////////////////////////
 const CommentsValidator = [
     body('content').trim().notEmpty().isString().isLength({min: 20, max: 300}),
 ]
+router.put('/:commentId', authJWT, CommentsValidator, inputValidation, async (req: Request, res: Response) => {
+    const data: CommentInputModel = {content: req.body.content.trim()}
+    const result = await CommentsService.updateByID(req.params.commentId, req!.user!.id, data)
+    res.sendStatus(result)
+})
 
-router.put('/:id', authJWT, CommentsValidator, inputValidation, async (req: Request, res: Response) => {
-    const data:CommentInputModel = {content: req.body.content.trim()}
-    const result = await CommentsService.updateByID(req.params.id, req!.user!.id,data)
+
+///////////////////////////////////////////////////////
+const CommentsLikeStatusValidator = [
+    body('likeStatus').trim().notEmpty().isString().toLowerCase().isIn(['none', 'like', 'dislike']),
+]
+router.put('/:commentId/like-status', authJWT, CommentsLikeStatusValidator, inputValidation, async (req: Request, res: Response) => {
+    const likeStatus = req.body.content.trim()
+    const result = await CommentsService.updateLikeByID(req.params.commentId, {
+        userId: req!.user!.id,
+        userLogin: req!.user!.login
+    }, likeStatus)
     res.sendStatus(result)
 })
 

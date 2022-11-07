@@ -21,7 +21,7 @@ export const jwtService = {
         return jwt.sign(
             {userId},
             settings.JWT_SECRET,
-            {expiresIn: '10s'})
+            {expiresIn: '5m'})
     },
 
 
@@ -36,13 +36,13 @@ export const jwtService = {
             ip,
             title,
             issuedAt: new Date(issuedAt).toISOString(),
-            expiresIn: new Date(issuedAt + 20 * 1000).toISOString(),
+            expiresIn: new Date(issuedAt + 60*60*24 * 1000).toISOString(),
         }
 
         const refreshToken = jwt.sign(
             {userId, deviceId, issuedAt: new Date(issuedAt).toISOString()},
             settings.JWT_SECRET,
-            {expiresIn: '20s'})
+            {expiresIn: '24h'})
 
         await refreshTokens.addOrUpdateToken(dataRefreshToken)
 

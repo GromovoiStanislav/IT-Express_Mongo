@@ -1,7 +1,7 @@
-import {Router, Request, Response, NextFunction} from 'express'
+import {Router, Request, Response} from 'express'
 import {PostsService, PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
-import {auth,authJWT} from "../middlewares/authorization";
+import {auth, authJWT, userFromJWT} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
 import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
 import {CommentsQuery, CommentsService} from "../domain/comments-services";
@@ -10,6 +10,7 @@ import {CommentInputModel} from "../types/comments";
 const router = Router();
 
 
+/////////////////////////////////////////////////
 router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) => {
 
     const paginationParams: paginationParams = {
@@ -23,6 +24,8 @@ router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) =>
     res.send(result)
 })
 
+
+/////////////////////////////////////////////////
 router.get('/:id', async (req: Request, res: Response) => {
     const item = await PostsQuery.findByID(req.params.id)
     if (item) {
@@ -32,6 +35,8 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
+
+/////////////////////////////////////////////////
 router.delete('/:id', auth, async (req: Request, res: Response) => {
     if (await PostsService.deleteByID(req.params.id)) {
         res.sendStatus(204)
@@ -39,6 +44,9 @@ router.delete('/:id', auth, async (req: Request, res: Response) => {
         res.sendStatus(404)
     }
 })
+
+
+/////////////////////////////////////////////////
 const isValidBlogId: CustomValidator = async (value) => {
     const currentBlog = await BlogsQuery.findByID(value)
     if (!currentBlog) {
@@ -52,8 +60,6 @@ const validator = [
     body('content').trim().notEmpty().isString().isLength({max: 1000}),
     body('blogId').trim().notEmpty().isString().custom(isValidBlogId),
 ]
-
-
 router.post('/', auth, validator, inputValidation, async (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
@@ -66,6 +72,7 @@ router.post('/', auth, validator, inputValidation, async (req: Request, res: Res
 })
 
 
+/////////////////////////////////////////////////
 router.put('/:id', auth, validator, inputValidation, async (req: Request, res: Response) => {
     const data = {
         title: req.body.title.trim(),
@@ -83,11 +90,11 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
 })
 
 
-router.get('/:postId/comments', paginationQuerySanitizer, async (req: Request, res: Response) => {
+/////////////////////////////////////////////////
+router.get('/:postId/comments', paginationQuerySanitizer, userFromJWT, async (req: Request, res: Response) => {
 
     const isFind = await PostsQuery.findByID(req.params.postId)
     if(!isFind){return  res.sendStatus(404)}
-
 
     const paginationParams: paginationParams = {
         pageNumber: Number(req.query.pageNumber),
@@ -96,7 +103,7 @@ router.get('/:postId/comments', paginationQuerySanitizer, async (req: Request, r
         sortDirection: req.query.sortDirection as string,
     }
 
-    const item = await CommentsQuery.findAllByPostId(req.params.postId,paginationParams)
+    const item = await CommentsQuery.findAllByPostId(req.params.postId,paginationParams,req!.user!.id)
     if (item) {
         res.send(item)
     } else {
@@ -105,11 +112,10 @@ router.get('/:postId/comments', paginationQuerySanitizer, async (req: Request, r
 })
 
 
-
+/////////////////////////////////////////////////
 const CommentsValidator = [
     body('content').trim().notEmpty().isString().isLength({min: 20, max: 300}),
 ]
-
 router.post('/:postId/comments',authJWT,CommentsValidator, inputValidation, async (req: Request, res: Response) => {
 
     const isFind = await PostsQuery.findByID(req.params.postId)
@@ -122,7 +128,7 @@ router.post('/:postId/comments',authJWT,CommentsValidator, inputValidation, asyn
 })
 
 
-
+///////////////////////////////////////////////
 export const clearAllPosts = async () => {
     await PostsService.clearAll()
 }
