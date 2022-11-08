@@ -50,8 +50,8 @@ export const CommentLikes = {
 
     ////////////////////////////////////////////////////////
     async likesByCommentID(commentId: string, userId?: string): Promise<likesInfoViewModel> {
-        const likesCount = await CommentLikesCollection.countDocuments({commentId, like: 'Like'})
-        const dislikesCount = await CommentLikesCollection.countDocuments({commentId, like: 'Dislike'})
+        const likesCount = await CommentLikesCollection.countDocuments({commentId, likeStatus: 'Like'})
+        const dislikesCount = await CommentLikesCollection.countDocuments({commentId, likeStatus: 'Dislike'})
         let myStatus = 'None'
         if (userId) {
             const doc = await CommentLikesCollection.findOne({commentId, userId})
@@ -65,9 +65,17 @@ export const CommentLikes = {
 
     ///////////////////////////////////////////////////////
     async updateLikeByID(commentId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
-        await CommentLikesCollection.updateOne({commentId, userId}, {$set: {likeStatus,userId,userLogin}},{upsert:true})
-        //return result.modifiedCount === 1 && result.upsertedCount === 1
-        return true
+        const addedAt = new Date().toISOString()
+        const result = await CommentLikesCollection.updateOne({commentId, userId}, {
+            $set: {
+                likeStatus,
+                userId,
+                userLogin,
+                addedAt
+            }
+        }, {upsert: true})
+        return result.modifiedCount === 1 || result.upsertedCount === 1
+        //return true
     },
 
 
