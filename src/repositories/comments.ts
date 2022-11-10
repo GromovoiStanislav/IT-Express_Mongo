@@ -3,8 +3,6 @@ import {CommentInputModel, CommentsRawViewModel} from "../types/comments";
 import {paginationParams} from "../middlewares/input-validation";
 
 
-
-
 export type CommentDBType = {
     _id?: string,
     id: string,

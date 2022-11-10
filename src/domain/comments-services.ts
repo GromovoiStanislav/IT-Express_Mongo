@@ -53,14 +53,14 @@ export const CommentsService = {
 
 
     ///////////////////////////////////////////////////////
-    async updateLikeByID(commentId: string, user: { userId: string, userLogin: string }, likeStatus: string): Promise<number> {
+    async updateLikeByID(commentId: string, userId: string, likeStatus: string): Promise<number> {
         const res = await Comments.findByID(commentId)
         if (!res) {
             return 404
         }
 
         if (likeStatus === 'none') {
-            const result = await CommentLikes.deleteByCommentIDUserID(commentId, user.userId)
+            const result = await CommentLikes.deleteByCommentIDUserID(commentId, userId)
             if (result) {
                 return 204
             }
@@ -69,7 +69,7 @@ export const CommentsService = {
 
         likeStatus = likeStatus[0].toUpperCase() + likeStatus.slice(1)
 
-        const result = await CommentLikes.updateLikeByID(commentId, user.userId, user.userLogin, likeStatus)
+        const result = await CommentLikes.updateLikeByID(commentId, userId, likeStatus)
         if (result) {
             return 204
         }

@@ -1,5 +1,5 @@
 import {dbDemo} from "./db";
-import {likesInfoViewModel} from "../types/comments";
+import {LikesInfoViewModel} from "../types/comments";
 
 
 export type CommentLikesDBType = {
@@ -7,8 +7,8 @@ export type CommentLikesDBType = {
     commentId: string,
     likeStatus: string,
     userId: string,
-    userLogin: string,
-    addedAt: string,
+    // userLogin: string,
+    // addedAt: string,
 }
 
 
@@ -49,7 +49,7 @@ export const CommentLikes = {
 
 
     ////////////////////////////////////////////////////////
-    async likesByCommentID(commentId: string, userId?: string): Promise<likesInfoViewModel> {
+    async likesByCommentID(commentId: string, userId?: string): Promise<LikesInfoViewModel> {
         const likesCount = await CommentLikesCollection.countDocuments({commentId, likeStatus: 'Like'})
         const dislikesCount = await CommentLikesCollection.countDocuments({commentId, likeStatus: 'Dislike'})
         let myStatus = 'None'
@@ -64,18 +64,13 @@ export const CommentLikes = {
 
 
     ///////////////////////////////////////////////////////
-    async updateLikeByID(commentId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
-        const addedAt = new Date().toISOString()
-        const result = await CommentLikesCollection.updateOne({commentId, userId}, {
-            $set: {
-                likeStatus,
-                userId,
-                userLogin,
-                addedAt
-            }
-        }, {upsert: true})
+    async updateLikeByID(commentId: string, userId: string, likeStatus: string): Promise<Boolean> {
+        const result = await CommentLikesCollection.updateOne(
+            {commentId, userId},
+            {$set: {likeStatus}},
+            {upsert: true}
+        )
         return result.modifiedCount === 1 || result.upsertedCount === 1
-        //return true
     },
 
 

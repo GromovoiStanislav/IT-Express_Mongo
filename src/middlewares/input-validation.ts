@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express'
-import {validationResult, ValidationError, query} from 'express-validator';
+import {validationResult, ValidationError, query, body} from 'express-validator';
 
 const errorFormatter = ({location, msg, param, value, nestedErrors}: ValidationError) => {
     return {message: msg, field: param}
@@ -33,3 +33,7 @@ export type paginationParams = {
     sortBy:string,
     sortDirection:string,
 }
+
+export const likeStatusValidator = [
+    body('likeStatus').trim().notEmpty().isString().toLowerCase().isIn(['none', 'like', 'dislike']),
+]

@@ -2,7 +2,7 @@ import {Router, Request, Response} from 'express'
 
 import {authJWT, userIdFromJWT} from "../middlewares/authorization";
 import {body} from 'express-validator';
-import {inputValidation} from '../middlewares/input-validation'
+import {inputValidation, likeStatusValidator} from '../middlewares/input-validation'
 import {CommentsService, CommentsQuery} from "../domain/comments-services";
 import {CommentInputModel} from "../types/comments";
 
@@ -45,15 +45,9 @@ router.put('/:commentId', authJWT, CommentsValidator, inputValidation, async (re
 
 
 ///////////////////////////////////////////////////////
-const CommentsLikeStatusValidator = [
-    body('likeStatus').trim().notEmpty().isString().toLowerCase().isIn(['none', 'like', 'dislike']),
-]
-router.put('/:commentId/like-status', authJWT, CommentsLikeStatusValidator, inputValidation, async (req: Request, res: Response) => {
+router.put('/:commentId/like-status', authJWT, likeStatusValidator, inputValidation, async (req: Request, res: Response) => {
     const likeStatus = req.body.likeStatus.trim()
-    const result = await CommentsService.updateLikeByID(req.params.commentId, {
-        userId: req!.user!.id,
-        userLogin: req!.user!.login
-    }, likeStatus)
+    const result = await CommentsService.updateLikeByID(req.params.commentId, req!.user!.id, likeStatus)
     res.sendStatus(result)
 })
 

@@ -1,38 +1,44 @@
 import {dbDemo} from "./db";
 import {paginationParams} from "../middlewares/input-validation";
+import {PaginatorPostViewModel, PostInputModel} from "../types/posts";
 
 
-export type PostType = {
-    id?: string,
-    title?: string,
-    shortDescription?: string,
-    content?: string,
-    blogId?: string,
-    blogName?: string,
-    createdAt?: string,
-}
 
-export type PostViewType = {
-    pagesCount: number,
-    page: number,
-    pageSize: number,
-    totalCount: number,
-    items: PostType[]
+export type PostTypeBD = {
+    id: string,
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    blogName: string,
+    createdAt: string,
 }
 
 
-const PostsCollection = dbDemo.collection<PostType>('posts')
+
+// export type PostViewType = {
+//     pagesCount: number,
+//     page: number,
+//     pageSize: number,
+//     totalCount: number,
+//     items: PostTypeBD[]
+// }
+
+
+const PostsCollection = dbDemo.collection<PostTypeBD>('posts')
 
 
 
 export const Posts = {
 
+    /////////////////////////////////////////////////
     async clearAll(): Promise<void> {
         await PostsCollection.deleteMany({})
     },
 
 
-    async getAll({pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PostViewType> {
+    /////////////////////////////////////////////////
+    async getAll({pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PaginatorPostViewModel> {
         const filter = {}
 
         const items = await PostsCollection
@@ -49,7 +55,8 @@ export const Posts = {
     },
 
 
-    async getAllByBlogID(blogId : string, {pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PostViewType> {
+    /////////////////////////////////////////////////
+    async getAllByBlogID(blogId : string, {pageNumber,pageSize,sortBy,sortDirection}:paginationParams): Promise<PaginatorPostViewModel> {
         const filter = {blogId:blogId }
 
         const items = await PostsCollection
@@ -66,23 +73,28 @@ export const Posts = {
     },
 
 
-
-
-    async findByID(id: string): Promise<PostType | null> {
-        return await PostsCollection.findOne({id},{projection: {_id: 0}})
+    /////////////////////////////////////////////////
+    async findByID(id: string): Promise<PostTypeBD | null> {
+        return PostsCollection.findOne({id},{projection: {_id: 0}})
     },
 
+
+    /////////////////////////////////////////////////
     async deleteByID(id: string): Promise<Boolean> {
         const result = await PostsCollection.deleteOne({id})
         return result.deletedCount === 1
     },
 
-    async createNewPost(data: PostType): Promise<PostType> {
-        const result = await PostsCollection.insertOne(data)
+
+    /////////////////////////////////////////////////
+    async createNewPost(data: PostTypeBD): Promise<PostTypeBD> {
+        await PostsCollection.insertOne(data)
         return data
     },
 
-    async updatePost(id: string, data: PostType): Promise<Boolean> {
+
+    /////////////////////////////////////////////////
+    async updatePost(id: string, data: PostInputModel): Promise<Boolean> {
         const result = await PostsCollection.updateOne({id}, {$set: {...data}})
         return result.matchedCount === 1
     },

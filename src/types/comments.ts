@@ -18,10 +18,10 @@ export type CommentViewModel = {
     userId: string,
     userLogin: string,
     createdAt: string,
-    likesInfo:likesInfoViewModel
+    likesInfo:LikesInfoViewModel
 }
 
-export type likesInfoViewModel = {
+export type LikesInfoViewModel = {
     likesCount: number,
     dislikesCount: number,
     myStatus: string

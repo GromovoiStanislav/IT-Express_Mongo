@@ -3,15 +3,21 @@ import {PostsService, PostsQuery} from '../domain/posts-services'
 import {BlogsQuery} from '../domain/blogs-services'
 import {auth, authJWT, userIdFromJWT} from "../middlewares/authorization";
 import {body, CustomValidator} from 'express-validator';
-import {paginationQuerySanitizer, inputValidation, paginationParams} from '../middlewares/input-validation'
+import {
+    paginationQuerySanitizer,
+    inputValidation,
+    paginationParams,
+    likeStatusValidator
+} from '../middlewares/input-validation'
 import {CommentsQuery, CommentsService} from "../domain/comments-services";
 import {CommentInputModel} from "../types/comments";
+import {PostInputModel} from "../types/posts";
 
 const router = Router();
 
 
 /////////////////////////////////////////////////
-router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) => {
+router.get('/', paginationQuerySanitizer, userIdFromJWT, async (req: Request, res: Response) => {
 
     const paginationParams: paginationParams = {
         pageNumber: Number(req.query.pageNumber),
@@ -20,14 +26,14 @@ router.get('/', paginationQuerySanitizer, async (req: Request, res: Response) =>
         sortDirection: req.query.sortDirection as string,
     }
 
-    const result = await PostsQuery.getAll(paginationParams)
+    const result = await PostsQuery.getAll(paginationParams, req!.userId)
     res.send(result)
 })
 
 
 /////////////////////////////////////////////////
-router.get('/:id', async (req: Request, res: Response) => {
-    const item = await PostsQuery.findByID(req.params.id)
+router.get('/:id', userIdFromJWT, async (req: Request, res: Response) => {
+    const item = await PostsQuery.findByID(req.params.id, req!.userId)
     if (item) {
         res.send(item)
     } else {
@@ -61,7 +67,7 @@ const validator = [
     body('blogId').trim().notEmpty().isString().custom(isValidBlogId),
 ]
 router.post('/', auth, validator, inputValidation, async (req: Request, res: Response) => {
-    const data = {
+    const data:PostInputModel = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
         content: req.body.content.trim(),
@@ -74,7 +80,7 @@ router.post('/', auth, validator, inputValidation, async (req: Request, res: Res
 
 /////////////////////////////////////////////////
 router.put('/:id', auth, validator, inputValidation, async (req: Request, res: Response) => {
-    const data = {
+    const data:PostInputModel = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
         content: req.body.content.trim(),
@@ -88,6 +94,18 @@ router.put('/:id', auth, validator, inputValidation, async (req: Request, res: R
     }
 
 })
+
+///////////////////////////////////////////////////////
+router.put('/:postId/like-status', authJWT, likeStatusValidator, inputValidation, async (req: Request, res: Response) => {
+    const likeStatus = req.body.likeStatus.trim()
+    const result = await PostsService.updateLikeByID(req.params.postId, {
+        userId: req!.user!.id,
+        userLogin: req!.user!.login
+    }, likeStatus)
+    res.sendStatus(result)
+})
+
+
 
 
 /////////////////////////////////////////////////
