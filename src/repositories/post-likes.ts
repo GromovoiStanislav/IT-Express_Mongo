@@ -42,10 +42,10 @@ export const PostLikes = {
     },
 
     //////////////////////////////////////////////////
-    async deleteByID(id: string): Promise<Boolean> {
-        const result = await PostLikesCollection.deleteOne({id})
-        return result.deletedCount > 0
-    },
+    // async deleteByID(id: string): Promise<Boolean> {
+    //     const result = await PostLikesCollection.deleteOne({id})
+    //     return result.deletedCount > 0
+    // },
 
 
     ////////////////////////////////////////////////////////
@@ -78,9 +78,9 @@ export const PostLikes = {
 
 
     ///////////////////////////////////////////////////////
-    async updateLikeByID(commentId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
+    async updateLikeByID(postId: string, userId: string, userLogin: string, likeStatus: string): Promise<Boolean> {
         const addedAt = new Date().toISOString()
-        const result = await PostLikesCollection.updateOne({commentId, userId}, {
+        const result = await PostLikesCollection.updateOne({postId, userId}, {
             $set: {
                 likeStatus,
                 userLogin,
