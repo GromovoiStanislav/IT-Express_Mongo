@@ -164,6 +164,7 @@ export const PostsService = {
             return 404
         }
 
+        likeStatus = likeStatus.toLowerCase()
         if (likeStatus === 'none') {
             const result = await PostLikes.deleteByPostIDUserID(postId, user.userId)
             if (result) {
@@ -173,7 +174,6 @@ export const PostsService = {
         }
 
         likeStatus = likeStatus[0].toUpperCase() + likeStatus.slice(1)
-
         const result = await PostLikes.updateLikeByID(postId, user.userId, user.userLogin, likeStatus)
         if (result) {
             return 204
