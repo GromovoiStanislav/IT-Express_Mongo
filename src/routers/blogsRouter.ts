@@ -1,7 +1,7 @@
 import {Router, Request, Response} from 'express'
 import {BlogsService,BlogsQuery} from '../domain/blogs-services'
 import {PostsService,PostsQuery} from '../domain/posts-services'
-import {auth} from "../middlewares/authorization";
+import {auth, userIdFromJWT} from "../middlewares/authorization";
 import {body,query} from 'express-validator';
 import {paginationQuerySanitizer,inputValidation,paginationParams} from '../middlewares/input-validation'
 import {PostInputModel} from "../types/posts";
@@ -39,7 +39,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 })
 
 
-router.get('/:blogId/posts',paginationQuerySanitizer, async (req: Request, res: Response) => {
+router.get('/:blogId/posts',paginationQuerySanitizer, userIdFromJWT, async (req: Request, res: Response) => {
 
     const paginationParams: paginationParams = {
         pageNumber: Number(req.query.pageNumber),
@@ -48,7 +48,7 @@ router.get('/:blogId/posts',paginationQuerySanitizer, async (req: Request, res: 
         sortDirection: req.query.sortDirection as string,
     }
 
-    const result = await PostsQuery.findPostByBlogID(req.params.blogId,paginationParams )
+    const result = await PostsQuery.findPostByBlogID(req.params.blogId,paginationParams, req!.userId)
     if (result) {
         res.send(result)
     } else {

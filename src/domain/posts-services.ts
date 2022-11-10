@@ -1,4 +1,4 @@
-import {Posts, PostTypeBD} from "../repositories/posts";
+import {Posts} from "../repositories/posts";
 import {BlogsQuery} from './blogs-services'
 import {paginationParams} from "../middlewares/input-validation";
 import {PaginatorPostViewModel, PostInputModel, PostViewModel} from "../types/posts";
@@ -50,12 +50,26 @@ export const PostsQuery = {
 
 
     /////////////////////////////////////////////////
-    async findPostByBlogID(blogId: string, paginationParams: paginationParams): Promise<PaginatorPostViewModel | null> {
+    async findPostByBlogID(blogId: string, paginationParams: paginationParams, userId?: string): Promise<PaginatorPostViewModel | null> {
         const blog = await BlogsQuery.findByID(blogId)
         if (!blog) {
             return null
         }
-        return await Posts.getAllByBlogID(blogId, paginationParams)
+
+        const result = await Posts.getAllByBlogID(blogId, paginationParams)
+        result.items = await Promise.all(result.items.map(async el => ({
+            id: el.id,
+            title: el.title,
+            shortDescription: el.shortDescription,
+            content: el.content,
+            blogId: el.blogId,
+            blogName: el.blogName,
+            createdAt: el.createdAt,
+            extendedLikesInfo: await PostLikes.likesInfoByPostID(el.id, userId)
+        })))
+        return result
+
+
     },
 
 }
