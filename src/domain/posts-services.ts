@@ -42,7 +42,6 @@ export const PostsQuery = {
             blogId: findedPost.blogId,
             blogName: findedPost.blogName,
             createdAt: findedPost.createdAt,
-
             extendedLikesInfo: await PostLikes.likesInfoByPostID(findedPost.id, userId)
         }
 
@@ -97,7 +96,6 @@ export const PostsService = {
             blogId: result.blogId,
             blogName: result.blogName,
             createdAt: result.createdAt,
-
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -117,14 +115,31 @@ export const PostsService = {
 
 
     /////////////////////////////////////////////////
-    createNewPostByBlogID: async function (data: PostTypeBD): Promise<PostTypeBD | null> {
+    createNewPostByBlogID: async function (data: PostInputModel): Promise<PostViewModel | null> {
         const blog = await BlogsQuery.findByID(String(data.blogId))
         if (!blog) {
             return null
         }
         const newPost = {...data, id: uid(), createdAt: new Date().toISOString(), blogName: blog.name}
-        await Posts.createNewPost({...newPost})
-        return newPost
+        const result = await Posts.createNewPost({...newPost})
+
+        const outPost = {
+            id: result.id,
+            title: result.title,
+            shortDescription: result.shortDescription,
+            content: result.content,
+            blogId: result.blogId,
+            blogName: result.blogName,
+            createdAt: result.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None',
+                newestLikes: []
+            }
+        }
+
+        return outPost
     },
 
 

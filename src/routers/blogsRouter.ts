@@ -4,6 +4,7 @@ import {PostsService,PostsQuery} from '../domain/posts-services'
 import {auth} from "../middlewares/authorization";
 import {body,query} from 'express-validator';
 import {paginationQuerySanitizer,inputValidation,paginationParams} from '../middlewares/input-validation'
+import {PostInputModel} from "../types/posts";
 
 
 const router = Router();
@@ -63,7 +64,7 @@ const postsValidator = [
 
 router.post('/:blogId/posts', auth, postsValidator, inputValidation, async (req: Request, res: Response) => {
 
-    const data = {
+    const data:PostInputModel = {
         title: req.body.title.trim(),
         shortDescription: req.body.shortDescription.trim(),
         content: req.body.content.trim(),
