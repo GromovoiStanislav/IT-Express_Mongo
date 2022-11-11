@@ -68,7 +68,7 @@ export const PostLikes = {
 
     ////////////////////////////////////////////////////////
     async newestLikes(postId: string, limit: number): Promise<LikesDetailsViewModel[]> {
-        const result = await PostLikesCollection.find({postId}).limit(limit).sort({addedAt: -1}).toArray()
+        const result = await PostLikesCollection.find({postId, likeStatus: 'Like'}).limit(limit).sort({addedAt: -1}).toArray()
         return result.map(el => ({
             addedAt: el.addedAt,
             userId: el.userId,
